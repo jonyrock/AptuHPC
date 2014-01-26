@@ -4,6 +4,9 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <itemPath>cached_thread_pool.h</itemPath>
+      <itemPath>console_interface.h</itemPath>
+      <itemPath>worker.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -39,8 +42,17 @@
         <ccTool>
           <standard>8</standard>
         </ccTool>
+        <linkerTool>
+          <commandLine>-lboost_thread</commandLine>
+        </linkerTool>
       </compileType>
+      <item path="cached_thread_pool.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="console_interface.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="worker.h" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
     <conf name="Release" type="1">
@@ -64,8 +76,17 @@
         <asmTool>
           <developmentMode>5</developmentMode>
         </asmTool>
+        <linkerTool>
+          <commandLine>-lboost_thread</commandLine>
+        </linkerTool>
       </compileType>
+      <item path="cached_thread_pool.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="console_interface.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="worker.h" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
   </confs>
