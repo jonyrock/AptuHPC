@@ -13,6 +13,7 @@ class CachedThreadsApp {
 public:
 
     CachedThreadsApp() {
+        task_id = 0;
         ConsoleInterface(boost::bind(&CachedThreadsApp::addHandler, this, _1, _2),
                 boost::bind(&CachedThreadsApp::killHandler, this, _1, _2),
                 boost::bind(&CachedThreadsApp::showHandler, this, _1));
@@ -21,9 +22,15 @@ public:
 
 private:
 
+    CachedThreadPool pool;
+
+    int task_id;
+
     void addHandler(ConsoleInterface& ci, float seconds) {
+        task_id++;
+        size_t myId = pool.addTask(boost::bind(CachedThreadsApp::sleep_task, seconds, task_id));
         stringstream ss;
-        ss << "add with " << seconds << endl;
+        ss << "added task to worker " << myId << " with " << seconds << " seconds sleep" << endl;
         ci << ss.str();
     }
 
@@ -39,11 +46,10 @@ private:
         ci << ss.str();
     }
 
-    static void sleep_task(int my_id) {
+    static void sleep_task(float seconds, int my_id) {
         for (int i = 0; i < 10; i++) {
-
             cout << "I am" << my_id << endl;
-            //            boost::this_thread::sleep(1);
+            sleep(seconds);
         }
     }
 

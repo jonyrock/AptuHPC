@@ -7,14 +7,15 @@ class Worker {
 public:
 
     Worker(size_t id) : m_id(id) {
-
     }
 
-    void setTask(boost::function< void () > f) {
-        
+    size_t id() {
+        return m_id;
     }
-    
-    
+
+    bool setTask(boost::function< void () > f) {
+        return false;
+    }
 
     void kill() {
 
@@ -24,8 +25,13 @@ public:
         return true;
     }
 
+    void onDie(boost::function< void (size_t) > f) {
+        m_onDie = f;
+    }
+
 
 private:
     const size_t m_id;
+    boost::function< void (size_t) > m_onDie;
 
 };
