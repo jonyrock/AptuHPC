@@ -10,9 +10,11 @@ public:
 
     }
 
-    void setTask(boost::function<void () > f) {
-
+    void setTask(boost::function< void () > f) {
+        
     }
+    
+    
 
     void kill() {
 

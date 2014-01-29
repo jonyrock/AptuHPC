@@ -9,18 +9,18 @@ using namespace std;
 class CachedThreadPool {
 public:
 
-    CachedThreadPool() : m_timeout(60.0f) {
+    CachedThreadPool() {
 
     }
 
-    size_t getWorkersCount() {
-        boost::mutex::scoped_lock l(m_mutex);
+    size_t getWorkersCount() const {
+        // TODO: use mutex
         return m_workers.size();
     }
 
 private:
-    boost::mutex m_mutex;
+    // TODO: use a mutex for Workers
+    // boost::mutex m_mutex;
     vector<Worker> m_workers;
-    volatile float m_timeout;
 
 };
