@@ -42,8 +42,8 @@ public:
                 waited = 0.0f;
             } else {
                 sleep(0.01f);
-                std::cout << "goto sleep " << std::endl;
-                waited += 0.01f;
+                std::cout << " sleep " << m_traits->id << std::endl;
+                waited += 0.1f;
                 if (waited >= 60.0f)
                     break;
             }
