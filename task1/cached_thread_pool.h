@@ -90,7 +90,7 @@ private:
         delete traits->worker;
         // vector = workersKilled + workersActive
         if (m_workersKilled.fetch_add(1) >= m_workersActive.fetch_sub(1)) {
-//            triggerCollector();
+            triggerCollector();
         }
     }
 

@@ -53,6 +53,7 @@ private:
     static void sleep_task(float seconds, int my_id) {
         cout << "enter " << my_id << endl;
         for (int i = 0; i < 5; i++) {
+            cout << ":: " << my_id << endl;
             boost::this_thread::sleep(
                     boost::posix_time::millisec(seconds * 1000));
         }
