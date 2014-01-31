@@ -12,7 +12,7 @@ using namespace std;
 class CachedThreadsApp {
 public:
 
-    CachedThreadsApp() {
+    CachedThreadsApp(): pool(3, boost::posix_time::seconds(5)) {
         task_id = 0;
         ConsoleInterface(boost::bind(&CachedThreadsApp::ciAddHandler, this, _1, _2),
                 boost::bind(&CachedThreadsApp::ciKillHandler, this, _1, _2),

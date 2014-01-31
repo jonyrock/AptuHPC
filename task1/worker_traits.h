@@ -1,7 +1,5 @@
 #pragma once
 
-
-
 /*
  * WorkerTrait is useful because 
  * 1. Pool can store some info, associated with worker without any map.
@@ -16,8 +14,8 @@ class Worker;
 
 struct WorkerTraits {
     friend Worker;
+    // TODO: add current task id
     size_t id;
-    size_t poolPosition;
     Worker* worker;
 
     bool isKilled() {

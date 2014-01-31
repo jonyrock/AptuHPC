@@ -44,7 +44,7 @@
           <standard>8</standard>
         </ccTool>
         <linkerTool>
-          <commandLine>-lboost_thread</commandLine>
+          <commandLine>-lboost_thread -lpthread</commandLine>
         </linkerTool>
       </compileType>
       <item path="cached_thread_pool.h" ex="false" tool="3" flavor2="0">

@@ -11,10 +11,12 @@ using namespace std;
 class CachedThreadPool {
 public:
 
-    CachedThreadPool() {
+    CachedThreadPool(size_t hotWorkersCount,
+            boost::posix_time::time_duration timeout) :
+    m_timeout(timeout) {
         m_workersActive.store(0);
-        m_workersNextId.store(0);
         m_workersKilled.store(0);
+        createHotWorkers(hotWorkersCount);
     }
 
     size_t workersCount() const {
@@ -35,17 +37,28 @@ private:
     vector<WorkerTraits*> m_workers;
     boost::mutex m_workersMutex;
     atomic_size_t m_workersActive;
-    atomic_size_t m_workersNextId;
     atomic_size_t m_workersKilled;
+    boost::posix_time::time_duration m_timeout;
+
+    void createHotWorkers(size_t count) {
+        boost::lock_guard<boost::mutex> guard(m_workersMutex);
+        for (size_t i = 0; i < count; i++) {
+            auto traits = new WorkerTraits();
+            auto worker = new Worker(
+                    traits,
+                    boost::bind(&CachedThreadPool::onWorkerDie, this, _1),
+                    true, boost::posix_time::millisec(0));
+            traits->worker = worker;
+            m_workers.push_back(traits);
+        }
+    }
 
     size_t addNewWorker(boost::function< void () > f) {
         auto traits = new WorkerTraits();
-        traits->id = m_workersNextId.fetch_add(1);
-        traits->poolPosition = m_workersActive.load();
         auto worker = new Worker(
                 traits,
-                boost::bind(&CachedThreadPool::onWorkerDie, this, _1)
-                );
+                boost::bind(&CachedThreadPool::onWorkerDie, this, _1),
+                false, m_timeout);
         traits->worker = worker;
         worker->setTask(f); // i own it
         boost::lock_guard<boost::mutex> gurad(m_workersMutex);
@@ -60,6 +73,7 @@ private:
             if (m_workers[i]->isKilled()) {
                 m_workersKilled.fetch_sub(1);
                 m_workersActive.fetch_sub(1);
+                delete m_workers[i];
             } else {
                 v.push_back(m_workers[i]);
             }
@@ -69,7 +83,7 @@ private:
 
     void onWorkerDie(WorkerTraits* traits) {
         delete traits->worker;
-        // vector = killed | workersCount
+        // vector = workersKilled + workersActive
         if (m_workersKilled.fetch_add(1) >= m_workersActive.fetch_sub(1)) {
             triggerCollector();
         }
