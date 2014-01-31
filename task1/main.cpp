@@ -32,7 +32,7 @@ private:
     void ciAddHandler(ConsoleInterface& ci, float seconds) {
         m_taskIdNum++;
         size_t myId = pool.addTask(m_taskIdNum,
-                boost::bind(CachedThreadsApp::sleep_task, seconds, m_taskIdNum));
+                boost::bind(CachedThreadsApp::sleepTaskSimple, seconds, m_taskIdNum));
         stringstream ss;
         ss << "added task " << m_taskIdNum << " to worker " << myId << " with "
                 << seconds << " seconds sleep" << endl;
@@ -51,17 +51,22 @@ private:
 //        ss << "1:(-12.0) 12:(-32.7) 14:(12.0)" << endl;
 //        ci << ss.str();
 //    }
-
-    static void sleep_task(float seconds, int my_id) {
-        cout << "enter " << my_id << endl;
+    
+    
+    static void sleepTaskSimple(float seconds, size_t id) {
+        boost::this_thread::sleep(
+                    boost::posix_time::millisec(seconds * 1000));
+    }
+    static void sleepTask(float seconds, size_t id) {
+        cout << "enter " << id << endl;
         for (int i = 0; i < 5; i++) {
-            cout << ":: " << my_id << endl;
+            cout << ":: " << id << endl;
 
             boost::this_thread::sleep(
                     boost::posix_time::millisec(seconds * 1000));
 
         }
-        cout << "end " << my_id << endl;
+        cout << "end " << id << endl;
     }
 
 };

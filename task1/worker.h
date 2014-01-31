@@ -51,7 +51,7 @@ public:
     }
 
     bool setTask(size_t id, boost::function< void () > f) {
-//        cout << "gonna set" << endl;
+        //        cout << "gonna set" << endl;
         if (m_taskMutex.try_lock() == false)
             return false;
         m_task = f;
@@ -63,7 +63,7 @@ public:
     }
 
     void killTask(size_t taskId) {
-        if(m_taskId != taskId)
+        if (m_taskId != taskId)
             return;
         m_thread.interrupt();
     }
@@ -71,7 +71,6 @@ public:
     size_t currentTaskId() {
         return m_taskId;
     }
-
 
 private:
     WorkerTraits* m_traits;
