@@ -30,7 +30,8 @@ private:
 
     void ciAddHandler(ConsoleInterface& ci, float seconds) {
         m_taskIdNum++;
-        size_t myId = pool.addTask(boost::bind(CachedThreadsApp::sleep_task, seconds, m_taskIdNum));
+        size_t myId = pool.addTask(m_taskIdNum,
+                boost::bind(CachedThreadsApp::sleep_task, seconds, m_taskIdNum));
         stringstream ss;
         ss << "added task" << m_taskIdNum << " to worker " << myId << " with "
                 << seconds << " seconds sleep" << endl;
@@ -50,12 +51,12 @@ private:
     }
 
     static void sleep_task(float seconds, int my_id) {
-        cout << "enter" << endl;
+        cout << "enter " << my_id << endl;
         for (int i = 0; i < 5; i++) {
-            cout << "I am " << my_id << endl;
             boost::this_thread::sleep(
                     boost::posix_time::millisec(seconds * 1000));
         }
+        cout << "end " << my_id << endl;
     }
 
 };
@@ -65,7 +66,7 @@ int main(int argc, char** argv) {
     if (argc != 3) {
         cout << "enter <hot threads count> and <timeout>" << endl;
     }
-    
+
     size_t n = boost::lexical_cast<size_t>(argv[1]);
     size_t ts = boost::lexical_cast<size_t>(argv[2]);
 

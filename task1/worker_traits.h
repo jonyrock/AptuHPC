@@ -14,23 +14,22 @@ class Worker;
 
 struct WorkerTraits {
     friend Worker;
-    // TODO: add current task id
     size_t id;
     Worker* worker;
 
-    bool isKilled() {
-        return m_isKilled.load();
+    WorkerTraits() {
+        m_isDead.store(false);
     }
 
-    WorkerTraits() {
-        m_isKilled.store(false);
+    bool isDead() {
+        return m_isDead.load();
     }
 
 private:
 
-    void isKilled(bool v) {
-        return m_isKilled.store(v);
+    void isDead(bool v) {
+        return m_isDead.store(v);
     }
 
-    std::atomic_bool m_isKilled;
+    std::atomic_bool m_isDead;
 };

@@ -16,6 +16,7 @@ public:
     m_timeout(timeout) {
         m_workersActive.store(0);
         m_workersKilled.store(0);
+        m_workersIdNum.store(0);
         createHotWorkers(hotWorkersCount);
     }
 
@@ -23,14 +24,14 @@ public:
         return m_workersActive.load();
     }
 
-    size_t addTask(boost::function< void () > f) {
+    size_t addTask(size_t id, boost::function< void () > f) {
         for (auto wp : m_workers) {
-            if (wp->isKilled()) continue;
-            if (wp->worker->setTask(f)) {
+            if (wp->isDead()) continue;
+            if (wp->worker->setTask(id, f)) {
                 return wp->id;
             }
         }
-        return addNewWorker(f);
+        return addNewWorker(id, f);
     }
 
 private:
@@ -38,12 +39,14 @@ private:
     boost::mutex m_workersMutex;
     atomic_size_t m_workersActive;
     atomic_size_t m_workersKilled;
+    atomic_size_t m_workersIdNum;
     boost::posix_time::time_duration m_timeout;
 
     void createHotWorkers(size_t count) {
         boost::lock_guard<boost::mutex> guard(m_workersMutex);
         for (size_t i = 0; i < count; i++) {
             auto traits = new WorkerTraits();
+            traits->id = m_workersIdNum.fetch_add(1);
             auto worker = new Worker(
                     traits,
                     boost::bind(&CachedThreadPool::onWorkerDie, this, _1),
@@ -53,24 +56,26 @@ private:
         }
     }
 
-    size_t addNewWorker(boost::function< void () > f) {
+    size_t addNewWorker(size_t id, boost::function< void () > f) {
         auto traits = new WorkerTraits();
+        traits->id = m_workersIdNum.fetch_add(1);
         auto worker = new Worker(
                 traits,
                 boost::bind(&CachedThreadPool::onWorkerDie, this, _1),
                 false, m_timeout);
         traits->worker = worker;
-        worker->setTask(f); // i own it
+        worker->setTask(id, f); // i own it
         boost::lock_guard<boost::mutex> gurad(m_workersMutex);
         m_workers.push_back(traits);
         return traits->id;
     }
 
     void triggerCollector() {
+        cout << "collector trigger" << endl;
         boost::lock_guard<boost::mutex> gurad(m_workersMutex);
         vector<WorkerTraits*> v;
         for (size_t i = 0; i < m_workers.size(); i++) {
-            if (m_workers[i]->isKilled()) {
+            if (m_workers[i]->isDead()) {
                 m_workersKilled.fetch_sub(1);
                 m_workersActive.fetch_sub(1);
                 delete m_workers[i];
@@ -85,7 +90,7 @@ private:
         delete traits->worker;
         // vector = workersKilled + workersActive
         if (m_workersKilled.fetch_add(1) >= m_workersActive.fetch_sub(1)) {
-            triggerCollector();
+//            triggerCollector();
         }
     }
 
