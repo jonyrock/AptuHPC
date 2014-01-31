@@ -34,6 +34,15 @@ public:
         return addNewWorker(id, f);
     }
 
+    void killTask(size_t id) {
+        boost::lock_guard<boost::mutex> gurad(m_workersMutex);
+        for (auto wp : m_workers) {
+            if(wp->worker->currentTaskId() == id){
+                wp->worker->killTask(id);
+            }
+        }
+    }
+
 private:
     vector<WorkerTraits*> m_workers;
     boost::mutex m_workersMutex;

@@ -23,16 +23,22 @@ public:
     void workerRun() {
         boost::unique_lock<boost::mutex> lock(m_taskMutex);
         while (true) {
-            if (m_taskAvailable) {
-                m_taskAvailable = false;
-                m_task();
-            } else {
-                if (m_isHot) {
-                    m_taskCondition.wait(lock);
+            try {
+                if (m_taskAvailable) {
+                    m_taskAvailable = false;
+                    m_task();
+                    m_taskId = 0;
                 } else {
-                    if (!m_taskCondition.timed_wait(lock, m_timeout))
-                        break;
+                    if (m_isHot) {
+                        m_taskCondition.wait(lock);
+                    } else {
+                        if (!m_taskCondition.timed_wait(lock, m_timeout))
+                            break;
+                    }
                 }
+            } catch (const boost::thread_interrupted& e) {
+                cout << "got interrupted " << m_taskId << endl;
+                continue;
             }
         }
         cout << "Im outtie " << m_traits->id << endl;
@@ -45,7 +51,7 @@ public:
     }
 
     bool setTask(size_t id, boost::function< void () > f) {
-        cout << "gonna set" << endl;
+//        cout << "gonna set" << endl;
         if (m_taskMutex.try_lock() == false)
             return false;
         m_task = f;
@@ -56,8 +62,10 @@ public:
         return true;
     }
 
-    void kill(size_t taskId) {
-
+    void killTask(size_t taskId) {
+        if(m_taskId != taskId)
+            return;
+        m_thread.interrupt();
     }
 
     size_t currentTaskId() {
@@ -78,9 +86,5 @@ private:
     bool m_taskAvailable;
     bool m_taskId;
     boost::function< void () > m_task;
-
-    void triggerKill() {
-
-    }
 
 };
