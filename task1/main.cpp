@@ -4,16 +4,18 @@
 #include <iostream>
 #include <sstream>
 
-#include <boost/thread.hpp> // only for sleep function
+#include <boost/thread.hpp> 
 #include <boost/bind.hpp>
+#include <boost/lexical_cast.hpp>
 
 using namespace std;
 
 class CachedThreadsApp {
 public:
 
-    CachedThreadsApp(): pool(3, boost::posix_time::seconds(5)) {
-        task_id = 0;
+    CachedThreadsApp(size_t hotWorkersCount, size_t timeoutInMillseconds) :
+    pool(hotWorkersCount, boost::posix_time::milliseconds(timeoutInMillseconds)) {
+        m_taskIdNum = 0;
         ConsoleInterface(boost::bind(&CachedThreadsApp::ciAddHandler, this, _1, _2),
                 boost::bind(&CachedThreadsApp::ciKillHandler, this, _1, _2),
                 boost::bind(&CachedThreadsApp::ciShowHandler, this, _1));
@@ -24,13 +26,13 @@ private:
 
     CachedThreadPool pool;
 
-    int task_id;
+    int m_taskIdNum;
 
     void ciAddHandler(ConsoleInterface& ci, float seconds) {
-        task_id++;
-        size_t myId = pool.addTask(boost::bind(CachedThreadsApp::sleep_task, seconds, task_id));
+        m_taskIdNum++;
+        size_t myId = pool.addTask(boost::bind(CachedThreadsApp::sleep_task, seconds, m_taskIdNum));
         stringstream ss;
-        ss << "added task to worker " << myId << " with "
+        ss << "added task" << m_taskIdNum << " to worker " << myId << " with "
                 << seconds << " seconds sleep" << endl;
         ci << ss.str();
     }
@@ -60,7 +62,14 @@ private:
 
 int main(int argc, char** argv) {
 
-    CachedThreadsApp app;
+    if (argc != 3) {
+        cout << "enter <hot threads count> and <timeout>" << endl;
+    }
+    
+    size_t n = boost::lexical_cast<size_t>(argv[1]);
+    size_t ts = boost::lexical_cast<size_t>(argv[2]);
+
+    CachedThreadsApp app(n, ts);
 
     return 0;
 }
