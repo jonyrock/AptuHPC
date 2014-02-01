@@ -13,10 +13,9 @@ class Worker {
 public:
 
     Worker(WorkerTraits* traits,
-            boost::function< void (WorkerTraits*) > dieHandler,
             bool isHot, boost::posix_time::time_duration timeout) :
-    m_traits(traits), m_isHot(isHot), m_timeout(timeout),
-    m_dieHandler(dieHandler), m_taskAvailable(false),
+    m_traits(traits), m_isHot(isHot), m_timeout(timeout), 
+            m_taskAvailable(false),
     m_taskCondition(), m_thread(boost::bind(&Worker::workerRun, this)) {
     }
 
@@ -43,7 +42,6 @@ public:
         }
         cout << "Im outtie " << m_traits->id << endl;
         m_traits->isDead(true);
-        m_dieHandler(m_traits);
     }
 
     WorkerTraits* traits() {
@@ -70,6 +68,10 @@ public:
 
     size_t currentTaskId() {
         return m_taskId;
+    }
+    
+    ~Worker() {
+        m_thread.join();
     }
 
 private:
