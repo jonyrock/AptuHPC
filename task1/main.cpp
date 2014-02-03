@@ -57,7 +57,7 @@ private:
                 ss << "!";
             ss << trait.id;
             
-            ss << " ~> " << trait.taskStart << "--" << trait.waitStart << " ~> ";
+//            ss << " ~> " << trait.taskStart << "--" << trait.waitStart << " ~> ";
             
             if (trait.taskStart >= trait.waitStart) {
                 auto durSeconds = (curTime - trait.taskStart).seconds();
