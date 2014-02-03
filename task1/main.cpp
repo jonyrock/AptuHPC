@@ -74,8 +74,6 @@ private:
 
     void appExit() {
         cout << "terminate tasks" << endl;
-        pool.killAllTasks();
-        cout << "bye" << endl;
     }
 
     static void sleepTaskSimple(float seconds, size_t id) {
@@ -107,7 +105,9 @@ int main(int argc, char** argv) {
     size_t ts = boost::lexical_cast<size_t>(argv[2]);
 
     CachedThreadsApp app(n, ts);
-
+    
+    cout << "bye. Pool gonna do some work in destructor." << endl;
+    
     return 0;
 }
 

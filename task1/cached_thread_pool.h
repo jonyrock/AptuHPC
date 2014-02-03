@@ -62,7 +62,9 @@ public:
     }
 
     ~CachedThreadPool() {
+        cout << "I am pool destructor" << endl;
         m_collectorThread.interrupt();
+        m_collectorThread.join();
         killAllTasks();
     }
 
