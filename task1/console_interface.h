@@ -53,7 +53,8 @@ private:
         cout << "show     // Show active tasks with their statuses in format:" << endl;
         cout << "         //   <workerId>[<taskId>](<seconds>) - taskId working on workerId time in seconds " << endl;
         cout << "         //   <workerId>[x](<seconds>)  - seconds waiting for new task" << endl;
-        cout << "         // Output example: 7[122]:(12.0) 13[10]:(32.7) 14[x]:(12.0)" << endl;
+        cout << "         // Output example: 7[122]:(12.0) !13[10]:(32.7) 14[x]:(12.0)" << endl;
+        cout << "         // where ! tells that it is a hot one" << endl;
         cout << "help     // Show this help" << endl;
         cout << "exit     // Exit from this app" << endl;
     }

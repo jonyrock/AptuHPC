@@ -53,6 +53,8 @@ private:
         auto curTime = boost::posix_time::second_clock::local_time();
         stringstream ss;
         for (auto trait : traits) {
+            if (trait.isHot)
+                ss << "!";
             ss << trait.id;
             if (trait.taskStart > trait.waitStart) {
                 auto durSeconds = (curTime - trait.taskStart).seconds();

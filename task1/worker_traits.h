@@ -17,6 +17,7 @@ struct WorkerTraits {
     friend Worker;
     size_t id;
     size_t taskId;
+    bool isHot;
     Worker* worker;
     
     boost::posix_time::ptime taskStart;
@@ -36,6 +37,7 @@ struct WorkerTraits {
         taskStart = wt.taskStart;
         waitStart = wt.waitStart;
         taskId = wt.taskId;
+        isHot = wt.isHot;
         m_isDead.store(wt.isDead());
     }
     

@@ -17,6 +17,7 @@ public:
     m_traits(traits), m_isHot(isHot), m_timeout(timeout),
     m_taskAvailable(false),
     m_taskCondition(), m_thread(boost::bind(&Worker::workerRun, this)) {
+        m_traits->isHot = isHot;
     }
 
     void workerRun() {
