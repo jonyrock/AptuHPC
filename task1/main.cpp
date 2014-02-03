@@ -17,8 +17,9 @@ public:
     pool(hotWorkersCount, boost::posix_time::milliseconds(timeoutInMillseconds)) {
         m_taskIdNum = 0;
         ConsoleInterface(boost::bind(&CachedThreadsApp::ciAddHandler, this, _1, _2),
-                boost::bind(&CachedThreadsApp::ciKillHandler, this, _1, _2)
-//                boost::bind(&CachedThreadsApp::ciShowHandler, this, _1)
+                boost::bind(&CachedThreadsApp::ciKillHandler, this, _1, _2),
+                boost::bind(&CachedThreadsApp::ciShowHandler, this, _1),
+                boost::bind(&CachedThreadsApp::ciExitHandler, this, _1)
                 );
 
     }
@@ -46,17 +47,28 @@ private:
         ci << ss.str();
     }
 
-//    void ciShowHandler(ConsoleInterface& ci) {
-//        stringstream ss;
-//        ss << "1:(-12.0) 12:(-32.7) 14:(12.0)" << endl;
-//        ci << ss.str();
-//    }
+    void ciShowHandler(ConsoleInterface& ci) {
+        stringstream ss;
+        ss << "1:(-12.0) 12:(-32.7) 14:(12.0)" << endl;
+        ci << ss.str();
+    }
+
+    void ciExitHandler(ConsoleInterface& ci) {
+        appExit();
+    }
     
+    void appExit(){
+        cout << "terminate tasks" << endl;
+        pool.killAllTasks();
+        cout << "bye" << endl;
+    }
     
+
     static void sleepTaskSimple(float seconds, size_t id) {
         boost::this_thread::sleep(
-                    boost::posix_time::millisec(seconds * 1000));
+                boost::posix_time::millisec(seconds * 1000));
     }
+
     static void sleepTask(float seconds, size_t id) {
         cout << "enter " << id << endl;
         for (int i = 0; i < 5; i++) {

@@ -12,13 +12,15 @@ public:
 
     ConsoleInterface(
             boost::function< void (ConsoleInterface&, float) > addHandler,
-            boost::function< void (ConsoleInterface&, size_t) > killHandler
-            //            boost::function< void (ConsoleInterface&) > showHandler
+            boost::function< void (ConsoleInterface&, size_t) > killHandler,
+            boost::function< void (ConsoleInterface&) > showHandler,
+            boost::function< void (ConsoleInterface&) > exitHandler
             ) :
     m_addHandler(addHandler),
-    m_killHandler(killHandler)
-    //    m_showHandler(showHandler)
-    {
+    m_killHandler(killHandler),
+    m_showHandler(showHandler),
+    m_exitHandler(exitHandler),
+    m_isExit(false) {
         printWelcome();
         startInterfaceLoop();
     }
@@ -48,10 +50,10 @@ private:
         cout << "Examples with description: " << endl;
         cout << "add 13.5 // Add new task which will sleep for 13.5 seconds" << endl;
         cout << "kill 12  // Kill task with id 12" << endl;
-        //        cout << "show     // Show active tasks with their statuses in format:" << endl;
-        //        cout << "         //   <id>:(-<seconds>) - seconds remain" << endl;
-        //        cout << "         //   <id>:(<seconds>)  - seconds waiting for new task" << endl;
-        //        cout << "         // Output example: 7:(-12.0) 13:(-32.7) 14:(12.0)" << endl;
+        cout << "show     // Show active tasks with their statuses in format:" << endl;
+        cout << "         //   <id>:(-<seconds>) - seconds remain" << endl;
+        cout << "         //   <id>:(<seconds>)  - seconds waiting for new task" << endl;
+        cout << "         // Output example: 7:(-12.0) 13:(-32.7) 14:(12.0)" << endl;
         cout << "help     // Show this help" << endl;
         cout << "exit     // Exit from this app" << endl;
     }
@@ -95,26 +97,29 @@ private:
         }
 
         if (command == "exit") {
-            exit(0);
+            m_exitHandler(*this);
+            m_isExit = true;
         }
-
-
 
     }
 
     void startInterfaceLoop() {
-
         while (true) {
             string line;
             cout << endl;
             cout << "> ";
             getline(cin, line);
             consumeLine(line);
+            if (m_isExit)
+                break;
         }
     }
 
     boost::function< void (ConsoleInterface&, float) > m_addHandler;
     boost::function< void (ConsoleInterface&, size_t) > m_killHandler;
     boost::function< void (ConsoleInterface&) > m_showHandler;
+    boost::function< void (ConsoleInterface&) > m_exitHandler;
+
+    bool m_isExit;
 
 };

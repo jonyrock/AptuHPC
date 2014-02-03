@@ -43,10 +43,17 @@ public:
             }
         }
     }
-    
+
+    void killAllTasks() {
+        boost::lock_guard<boost::mutex> gurad(m_workersMutex);
+        for (auto wp : m_workers) {
+            delete wp->worker;
+        }
+    }
+
     ~CachedThreadPool() {
         m_collectorThread.interrupt();
-        m_collectorThread.join();
+        killAllTasks();
     }
 
 private:
@@ -111,7 +118,5 @@ private:
             triggerCollector();
         }
     }
-    
-    
 
 };

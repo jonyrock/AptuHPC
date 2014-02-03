@@ -14,18 +14,21 @@ public:
 
     Worker(WorkerTraits* traits,
             bool isHot, boost::posix_time::time_duration timeout) :
-    m_traits(traits), m_isHot(isHot), m_timeout(timeout), 
-            m_taskAvailable(false),
+    m_traits(traits), m_isHot(isHot), m_timeout(timeout),
+    m_taskAvailable(false),
     m_taskCondition(), m_thread(boost::bind(&Worker::workerRun, this)) {
     }
 
     void workerRun() {
         boost::unique_lock<boost::mutex> lock(m_taskMutex);
+        cout << "worker created " << m_traits->id << endl;
         while (true) {
             try {
                 if (m_taskAvailable) {
                     m_taskAvailable = false;
+                    cout << "task started " << m_taskId << endl;
                     m_task();
+                    cout << "task finished " << m_taskId << endl;
                     m_taskId = 0;
                 } else {
                     if (m_isHot) {
@@ -36,11 +39,12 @@ public:
                     }
                 }
             } catch (const boost::thread_interrupted& e) {
-                cout << "got interrupted " << m_taskId << endl;
-                continue;
+                if (m_traits->isDead())
+                    break;
+                cout << "task interrupted " << m_taskId << endl;
             }
         }
-        cout << "Im outtie " << m_traits->id << endl;
+        cout << "worker is going to die " << m_traits->id << endl;
         m_traits->isDead(true);
     }
 
@@ -69,9 +73,12 @@ public:
     size_t currentTaskId() {
         return m_taskId;
     }
-    
+
     ~Worker() {
+        m_traits->isDead(true);
+        m_thread.interrupt();
         m_thread.join();
+        cout << "worker deleted " << m_traits->id << endl;
     }
 
 private:
