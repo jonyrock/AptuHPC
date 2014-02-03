@@ -25,14 +25,14 @@ public:
         return m_workersActive.load();
     }
 
-    size_t addTask(size_t id, boost::function< void () > f) {
+    size_t addTask(size_t taskId, boost::function< void () > f) {
         for (auto wp : m_workers) {
             if (wp->isDead()) continue;
-            if (wp->worker->setTask(id, f)) {
+            if (wp->worker->setTask(taskId, f)) {
                 return wp->id;
             }
         }
-        return addNewWorker(id, f);
+        return addNewWorker(taskId, f);
     }
 
     void killTask(size_t id) {
@@ -78,13 +78,13 @@ private:
         }
     }
 
-    size_t addNewWorker(size_t id, boost::function< void () > f) {
+    size_t addNewWorker(size_t taskId, boost::function< void () > f) {
         auto traits = new WorkerTraits();
         traits->id = m_workersIdNum.fetch_add(1);
         auto worker = new Worker(traits,
                 false, m_timeout);
         traits->worker = worker;
-        worker->setTask(id, f); // i own it
+        worker->setTask(taskId, f); // i own it
         boost::lock_guard<boost::mutex> gurad(m_workersMutex);
         m_workers.push_back(traits);
         return traits->id;

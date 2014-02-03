@@ -52,15 +52,15 @@ public:
         return m_traits;
     }
 
-    bool setTask(size_t id, boost::function< void () > f) {
-        //        cout << "gonna set" << endl;
+    bool setTask(size_t taskId, boost::function< void () > f) {
         if (m_taskMutex.try_lock() == false)
             return false;
+        cout << "set task " << m_taskId << endl;
+        m_taskId = taskId;
         m_task = f;
         m_taskAvailable = true;
-        m_taskCondition.notify_one();
         m_taskMutex.unlock();
-        m_taskId = id;
+        m_taskCondition.notify_one();
         return true;
     }
 
@@ -92,7 +92,7 @@ private:
     boost::mutex m_taskMutex;
     boost::condition_variable m_taskCondition;
     bool m_taskAvailable;
-    bool m_taskId;
+    size_t m_taskId;
     boost::function< void () > m_task;
 
 };
