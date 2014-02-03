@@ -42,7 +42,10 @@ public:
                     }
                 }
             } catch (const boost::thread_interrupted& e) {
-                cout << "task interrupted " << m_taskId << endl;
+                if (m_taskAvailable)
+                    cout << "task interrupted " << m_taskId << endl;
+                else
+                    cout << "worker interrupted " << m_traits->id << endl;
                 m_traits->updateWaitStart();
                 if (m_traits->isDead()) {
                     break;

@@ -9,6 +9,8 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/date_time.hpp>
 
+#include <csignal>
+
 using namespace std;
 
 class CachedThreadsApp {
@@ -17,12 +19,15 @@ public:
     CachedThreadsApp(size_t hotWorkersCount, size_t timeoutInMillseconds) :
     pool(hotWorkersCount, boost::posix_time::milliseconds(timeoutInMillseconds)) {
         m_taskIdNum = 0;
+
+    }
+
+    void run() {
         ConsoleInterface(boost::bind(&CachedThreadsApp::ciAddHandler, this, _1, _2),
                 boost::bind(&CachedThreadsApp::ciKillHandler, this, _1, _2),
                 boost::bind(&CachedThreadsApp::ciShowHandler, this, _1),
                 boost::bind(&CachedThreadsApp::ciExitHandler, this, _1)
                 );
-
     }
 
 private:
@@ -56,9 +61,9 @@ private:
             if (trait.isHot)
                 ss << "!";
             ss << trait.id;
-            
-//            ss << " ~> " << trait.taskStart << "--" << trait.waitStart << " ~> ";
-            
+
+            // ss << " ~> " << trait.taskStart << "--" << trait.waitStart << " ~> ";
+
             if (trait.taskStart >= trait.waitStart) {
                 auto durSeconds = (curTime - trait.taskStart).seconds();
                 ss << "[" << trait.taskId << "]" << "(" << durSeconds << ")";
@@ -72,11 +77,11 @@ private:
     }
 
     void ciExitHandler(ConsoleInterface& ci) {
-        appExit();
+        
     }
 
     void appExit() {
-        cout << "terminate tasks" << endl;
+        
     }
 
     static void sleepTaskSimple(float seconds, size_t id) {
@@ -95,22 +100,44 @@ private:
         }
         cout << "end " << id << endl;
     }
+public:
+
+    ~CachedThreadsApp() {
+        cout << "delete" << endl;
+    }
 
 };
+
+CachedThreadsApp* app;
+
+void signalHandler(int signum) {
+    cout << "got handler " << app << endl;
+    if (app != NULL) {
+        cout << endl;
+        delete app;
+    }
+    cout << "Bye interrupted!" << endl;
+    exit(0);
+}
 
 int main(int argc, char** argv) {
 
     if (argc != 3) {
         cout << "enter <hot threads count> and <timeout>" << endl;
+        return 1;
     }
 
     size_t n = boost::lexical_cast<size_t>(argv[1]);
     size_t ts = boost::lexical_cast<size_t>(argv[2]);
 
-    CachedThreadsApp app(n, ts);
-    
-    cout << "bye. Pool gonna do some work in destructor." << endl;
-    
+    cout << "main thread id: " << boost::this_thread::get_id() << endl;
+
+    app = new CachedThreadsApp(n, ts);
+    signal(SIGINT, signalHandler);
+    app->run();
+    delete app;
+    cout << "Bye!" << endl;
     return 0;
+
 }
 
