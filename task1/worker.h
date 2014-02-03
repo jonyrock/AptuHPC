@@ -25,11 +25,13 @@ public:
         while (true) {
             try {
                 if (m_taskAvailable) {
+                    m_traits->updateTaskStart();
                     m_taskAvailable = false;
                     cout << "task started " << m_taskId << endl;
                     m_task();
                     cout << "task finished " << m_taskId << endl;
                     m_taskId = 0;
+                    m_traits->updateWaitStart();
                 } else {
                     if (m_isHot) {
                         m_taskCondition.wait(lock);
@@ -56,6 +58,7 @@ public:
         if (m_taskMutex.try_lock() == false)
             return false;
         cout << "set task " << m_taskId << endl;
+        m_traits->taskId = taskId;
         m_taskId = taskId;
         m_task = f;
         m_taskAvailable = true;

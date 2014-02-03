@@ -51,6 +51,16 @@ public:
         }
     }
 
+    vector<WorkerTraits> getTraits() {
+        boost::lock_guard<boost::mutex> gurad(m_workersMutex);
+        vector<WorkerTraits> vtr;
+        for (auto wp : m_workers) {
+            if (!wp->isDead())
+                vtr.push_back(*wp);
+        }
+        return vtr;
+    }
+
     ~CachedThreadPool() {
         m_collectorThread.interrupt();
         killAllTasks();

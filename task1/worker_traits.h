@@ -10,18 +10,44 @@
  */
 
 #include <atomic>
+#include <boost/date_time.hpp>
 class Worker;
 
 struct WorkerTraits {
     friend Worker;
     size_t id;
+    size_t taskId;
     Worker* worker;
+    
+    boost::posix_time::ptime taskStart;
+    boost::posix_time::ptime waitStart;
 
     WorkerTraits() {
         m_isDead.store(false);
+        updateTaskStart();
+        updateWaitStart();
+        // like it was happen before. It is matter.
+        taskStart -= boost::posix_time::seconds(1); 
     }
-
-    bool isDead() {
+    
+    WorkerTraits(const WorkerTraits& wt) {
+        id = wt.id;
+        worker = wt.worker;
+        taskStart = wt.taskStart;
+        waitStart = wt.waitStart;
+        taskId = wt.taskId;
+        m_isDead.store(wt.isDead());
+    }
+    
+    void updateTaskStart() {
+        taskStart = boost::posix_time::second_clock::local_time();
+    }
+    
+    void updateWaitStart() {
+        waitStart = boost::posix_time::second_clock::local_time();
+    }
+    
+    bool isDead() const {
         return m_isDead.load();
     }
 

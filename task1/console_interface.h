@@ -51,9 +51,9 @@ private:
         cout << "add 13.5 // Add new task which will sleep for 13.5 seconds" << endl;
         cout << "kill 12  // Kill task with id 12" << endl;
         cout << "show     // Show active tasks with their statuses in format:" << endl;
-        cout << "         //   <id>:(-<seconds>) - seconds remain" << endl;
-        cout << "         //   <id>:(<seconds>)  - seconds waiting for new task" << endl;
-        cout << "         // Output example: 7:(-12.0) 13:(-32.7) 14:(12.0)" << endl;
+        cout << "         //   <workerId>[<taskId>](<seconds>) - taskId working on workerId time in seconds " << endl;
+        cout << "         //   <workerId>[x](<seconds>)  - seconds waiting for new task" << endl;
+        cout << "         // Output example: 7[122]:(12.0) 13[10]:(32.7) 14[x]:(12.0)" << endl;
         cout << "help     // Show this help" << endl;
         cout << "exit     // Exit from this app" << endl;
     }

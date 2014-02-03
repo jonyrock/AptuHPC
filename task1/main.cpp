@@ -7,6 +7,7 @@
 #include <boost/thread.hpp> 
 #include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/date_time.hpp>
 
 using namespace std;
 
@@ -48,21 +49,32 @@ private:
     }
 
     void ciShowHandler(ConsoleInterface& ci) {
+        auto traits = pool.getTraits();
+        auto curTime = boost::posix_time::second_clock::local_time();
         stringstream ss;
-        ss << "1:(-12.0) 12:(-32.7) 14:(12.0)" << endl;
+        for (auto trait : traits) {
+            ss << trait.id;
+            if (trait.taskStart > trait.waitStart) {
+                auto durSeconds = (curTime - trait.taskStart).seconds();
+                ss << "[" << trait.taskId << "]" << "(" << durSeconds << ")";
+            } else {
+                auto durSeconds = (curTime - trait.waitStart).seconds();
+                ss << "[x]" << "(" << durSeconds << ")";
+            }
+            ss << " ";
+        }
         ci << ss.str();
     }
 
     void ciExitHandler(ConsoleInterface& ci) {
         appExit();
     }
-    
-    void appExit(){
+
+    void appExit() {
         cout << "terminate tasks" << endl;
         pool.killAllTasks();
         cout << "bye" << endl;
     }
-    
 
     static void sleepTaskSimple(float seconds, size_t id) {
         boost::this_thread::sleep(
