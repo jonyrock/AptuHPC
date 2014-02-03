@@ -43,6 +43,7 @@ public:
                 }
             } catch (const boost::thread_interrupted& e) {
                 cout << "task interrupted " << m_taskId << endl;
+                m_traits->updateWaitStart();
                 if (m_traits->isDead()) {
                     break;
                 }
