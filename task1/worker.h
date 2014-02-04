@@ -8,6 +8,7 @@
 #include <boost/bind.hpp>
 #include <atomic>
 #include <iostream>
+#include <sstream>
 
 class Worker {
 public:
@@ -37,7 +38,30 @@ public:
                     if (m_isHot) {
                         m_taskCondition.wait(lock);
                     } else {
-                        if (!m_taskCondition.timed_wait(lock, m_timeout))
+                        boost::system_time waitUntil = m_traits->waitStart + m_timeout;
+//                        cout << "timeout" << m_timeout << endl;
+                        
+                        bool succ;
+                        while (true) {
+                            
+//                            stringstream ss;
+//                            ss << " ~> " << boost::posix_time::second_clock::local_time() << "--" << waitUntil << endl;
+//                            cout << ss.str() << endl;
+                            
+                            succ = m_taskCondition.timed_wait(lock, m_timeout);
+//                            cout << "succ: " << succ << endl;
+                            
+                            if (succ)
+                                break;
+                            else if (boost::posix_time::second_clock::local_time() < waitUntil) {
+//                                stringstream ss;
+//                                ss << " ~> " << boost::posix_time::second_clock::local_time() << "--" << waitUntil << endl;
+//                                cout << ss.str();
+                                continue;
+                            }
+                            break;
+                        }
+                        if (!succ)
                             break;
                     }
                 }

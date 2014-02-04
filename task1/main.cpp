@@ -17,7 +17,7 @@ class CachedThreadsApp {
 public:
 
     CachedThreadsApp(size_t hotWorkersCount, size_t timeoutInMillseconds) :
-    pool(hotWorkersCount, boost::posix_time::milliseconds(timeoutInMillseconds)) {
+    pool(hotWorkersCount, boost::posix_time::seconds(timeoutInMillseconds)) {
         m_taskIdNum = 0;
 
     }
