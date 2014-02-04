@@ -9,6 +9,7 @@
 #include <atomic>
 #include <iostream>
 #include <sstream>
+#include <signal.h>
 
 class Worker {
 public:
@@ -22,6 +23,10 @@ public:
     }
 
     void workerRun() {
+        sigset_t set;
+        sigemptyset(&set);
+        sigaddset(&set, SIGINT);
+        pthread_sigmask(SIG_SETMASK, &set, NULL);
         boost::unique_lock<boost::mutex> lock(m_taskMutex);
         cout << "worker created " << m_traits->id << endl;
         while (true) {
@@ -39,24 +44,24 @@ public:
                         m_taskCondition.wait(lock);
                     } else {
                         boost::system_time waitUntil = m_traits->waitStart + m_timeout;
-//                        cout << "timeout" << m_timeout << endl;
-                        
+                        //                        cout << "timeout" << m_timeout << endl;
+
                         bool succ;
                         while (true) {
-                            
-//                            stringstream ss;
-//                            ss << " ~> " << boost::posix_time::second_clock::local_time() << "--" << waitUntil << endl;
-//                            cout << ss.str() << endl;
-                            
+
+                            // stringstream ss;
+                            // ss << " ~> " << boost::posix_time::second_clock::local_time() << "--" << waitUntil << endl;
+                            // cout << ss.str() << endl;
+
                             succ = m_taskCondition.timed_wait(lock, m_timeout);
-//                            cout << "succ: " << succ << endl;
-                            
+                            // cout << "succ: " << succ << endl;
+
                             if (succ)
                                 break;
                             else if (boost::posix_time::second_clock::local_time() < waitUntil) {
-//                                stringstream ss;
-//                                ss << " ~> " << boost::posix_time::second_clock::local_time() << "--" << waitUntil << endl;
-//                                cout << ss.str();
+                                // stringstream ss;
+                                // ss << " ~> " << boost::posix_time::second_clock::local_time() << "--" << waitUntil << endl;
+                                // cout << ss.str();
                                 continue;
                             }
                             break;
@@ -124,8 +129,8 @@ private:
 
     boost::mutex m_taskMutex;
     boost::condition_variable m_taskCondition;
-    bool m_taskAvailable;
-    size_t m_taskId;
+    volatile bool m_taskAvailable;
+    volatile size_t m_taskId;
     boost::function< void () > m_task;
 
 };

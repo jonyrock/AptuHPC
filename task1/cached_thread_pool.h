@@ -26,6 +26,7 @@ public:
     }
 
     size_t addTask(size_t taskId, boost::function< void () > f) {
+        boost::lock_guard<boost::mutex> gurad(m_workersMutex);
         for (auto wp : m_workers) {
             if (wp->isDead()) continue;
             if (wp->worker->setTask(taskId, f)) {
@@ -97,7 +98,7 @@ private:
                 false, m_timeout);
         traits->worker = worker;
         worker->setTask(taskId, f); // i own it
-        boost::lock_guard<boost::mutex> gurad(m_workersMutex);
+//        boost::lock_guard<boost::mutex> gurad(m_workersMutex);
         m_workers.push_back(traits);
         return traits->id;
     }
