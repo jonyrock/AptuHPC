@@ -15,11 +15,13 @@ public:
     ClientApp(string userName = "ClientName") : m_userName(userName),
     m_sock(m_service) {
         m_isExit = false;
+        ip::tcp::endpoint ep(ip::address::from_string("127.0.0.1"), 80);
+        m_sock.connect(ep);
     }
 
     void run() {
         printWelcome();
-        startInterfaceLoop();
+        interfaceLoop();
     }
 
     ~ClientApp() {
@@ -29,13 +31,14 @@ public:
 
 private:
 
+    string m_userName;
+    bool m_isExit;
+    io_service m_service;
+    ip::tcp::socket m_sock;
+
     void sendHandler(const string& msg) {
         try {
-            ip::tcp::endpoint ep(ip::address::from_string("127.0.0.1"), 80);
-            // m_sock.open(ip::tcp::v4());
-            // m_sock.connect(ep);
-            // m_sock.write_some(buffer("bla ha ha bla"));
-            // m_sock.close();
+            m_sock.write_some(buffer(msg));
         } catch (const boost::system::system_error& e) {
             cout << "error occurred:" << e.what() << endl;
         }
@@ -63,7 +66,7 @@ private:
         sendHandler(line);
     }
 
-    void startInterfaceLoop() {
+    void interfaceLoop() {
         while (true) {
             cout << endl;
             cout << m_userName + "> ";
@@ -74,12 +77,5 @@ private:
                 break;
         }
     }
-
-    string m_userName;
-    bool m_isExit;
-
-    io_service m_service;
-    ip::tcp::socket m_sock;
-
 
 };
