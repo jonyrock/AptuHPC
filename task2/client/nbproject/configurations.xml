@@ -6,11 +6,13 @@
                    projectFiles="true">
       <itemPath>ClientApp.h</itemPath>
       <itemPath>ConsoleInterface.h</itemPath>
-      <itemPath>Message.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
                    projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="shared" displayName="shared" projectFiles="true">
+      <itemPath>/home/alex/Aptu/hpc/AptuHPC/task2/shared/Message.h</itemPath>
     </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
@@ -29,6 +31,9 @@
       <itemPath>Makefile</itemPath>
     </logicalFolder>
   </logicalFolder>
+  <sourceRootList>
+    <Elem>/home/alex/Aptu/hpc/AptuHPC/task2/shared</Elem>
+  </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="Debug" type="1">
@@ -41,13 +46,19 @@
       <compileType>
         <ccTool>
           <standard>8</standard>
+          <incDir>
+            <pElem>../shared</pElem>
+          </incDir>
         </ccTool>
       </compileType>
+      <item path="/home/alex/Aptu/hpc/AptuHPC/task2/shared/Message.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="ClientApp.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="ConsoleInterface.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="Message.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -66,6 +77,9 @@
         <ccTool>
           <developmentMode>5</developmentMode>
           <standard>8</standard>
+          <incDir>
+            <pElem>/home/alex/Aptu/hpc/AptuHPC/task2/shared</pElem>
+          </incDir>
         </ccTool>
         <fortranCompilerTool>
           <developmentMode>5</developmentMode>
@@ -77,11 +91,14 @@
           <commandLine>-lboost_thread</commandLine>
         </linkerTool>
       </compileType>
+      <item path="/home/alex/Aptu/hpc/AptuHPC/task2/shared/Message.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="ClientApp.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="ConsoleInterface.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="Message.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>

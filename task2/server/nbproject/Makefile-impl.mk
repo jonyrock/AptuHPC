@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=task2
+PROJECTNAME=server
 
 # Active Configuration
 DEFAULTCONF=Debug

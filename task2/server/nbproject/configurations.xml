@@ -4,10 +4,8 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <itemPath>cached_thread_pool.h</itemPath>
-      <itemPath>console_interface.h</itemPath>
-      <itemPath>worker.h</itemPath>
-      <itemPath>worker_traits.h</itemPath>
+      <itemPath>ConsoleInterface.h</itemPath>
+      <itemPath>ServerApp.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -42,20 +40,19 @@
       <compileType>
         <ccTool>
           <standard>8</standard>
+          <incDir>
+            <pElem>../shared</pElem>
+          </incDir>
         </ccTool>
         <linkerTool>
           <commandLine>-lboost_thread -lpthread</commandLine>
         </linkerTool>
       </compileType>
-      <item path="cached_thread_pool.h" ex="false" tool="3" flavor2="0">
+      <item path="ConsoleInterface.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="console_interface.h" ex="false" tool="3" flavor2="0">
+      <item path="ServerApp.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="worker.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="worker_traits.h" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
     <conf name="Release" type="1">
@@ -83,15 +80,11 @@
           <commandLine>-lboost_thread</commandLine>
         </linkerTool>
       </compileType>
-      <item path="cached_thread_pool.h" ex="false" tool="3" flavor2="0">
+      <item path="ConsoleInterface.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="console_interface.h" ex="false" tool="3" flavor2="0">
+      <item path="ServerApp.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="worker.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="worker_traits.h" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
   </confs>

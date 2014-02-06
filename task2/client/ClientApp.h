@@ -20,7 +20,6 @@ private:
 
     void sendHandler(ConsoleInterface& ci, const string& msg) {
         cout << "sending " << msg << endl;
-//        Message m(m_userName, msg);
         ci.printMessage(Message(m_userName, msg));
     }
 
