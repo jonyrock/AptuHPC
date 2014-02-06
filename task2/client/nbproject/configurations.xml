@@ -50,6 +50,9 @@
             <pElem>../shared</pElem>
           </incDir>
         </ccTool>
+        <linkerTool>
+          <commandLine>-lboost_system -lpthread</commandLine>
+        </linkerTool>
       </compileType>
       <item path="/home/alex/Aptu/hpc/AptuHPC/task2/shared/Message.h"
             ex="false"
@@ -88,7 +91,7 @@
           <developmentMode>5</developmentMode>
         </asmTool>
         <linkerTool>
-          <commandLine>-lboost_thread</commandLine>
+          <commandLine>-lboost_system</commandLine>
         </linkerTool>
       </compileType>
       <item path="/home/alex/Aptu/hpc/AptuHPC/task2/shared/Message.h"

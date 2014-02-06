@@ -4,3 +4,5 @@
 /task1/build/
 /task2/client/dist/
 /task2/client/build/
+/task2/server/build/
+/task2/server/dist/
