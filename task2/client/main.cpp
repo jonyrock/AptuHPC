@@ -4,6 +4,8 @@
 #include <iostream>
 #include <csignal>
 
+#include <boost/asio.hpp>
+
 using namespace std;
 
 ClientApp* app;
@@ -17,8 +19,24 @@ void signalHandler(int signum) {
 }
 
 int main() {
-    app = new ClientApp();
+    try {
+        app = new ClientApp();
+    } catch (const boost::system::system_error& e) {
+        cout << "Connection rejected. Maybe server is switched off?";
+        cout << endl;
+        exit(1);
+    }
     signal(SIGINT, signalHandler);
     app->run();
     delete app;
 }
+
+
+
+
+
+
+
+
+
+
