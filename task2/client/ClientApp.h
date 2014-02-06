@@ -15,7 +15,7 @@ public:
     ClientApp(string userName = "ClientName") : m_userName(userName),
     m_sock(m_service) {
         m_isExit = false;
-        ip::tcp::endpoint ep(ip::address::from_string("127.0.0.1"), 80);
+        ip::tcp::endpoint ep(ip::address::from_string("127.0.0.1"), 5555);
         m_sock.connect(ep);
     }
 

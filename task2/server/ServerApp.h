@@ -11,13 +11,13 @@ using namespace std;
 class ServerApp {
 public:
 
-    ServerApp() : m_sock(m_service) {
-        //        m_sock = ip::tcp::socket(m_service);
-        ip::tcp::endpoint ep(ip::address::from_string("127.0.0.1"), 8001);
+    ServerApp(size_t workersNumber, size_t port) :
+    m_workersNumer(workersNumber), m_sock(m_service) {
+        ip::tcp::endpoint ep(ip::address::from_string("127.0.0.1"), port);
         m_sock.open(ep.protocol());
         m_sock.set_option(ip::tcp::socket::reuse_address(true));
         m_sock.bind(ep);
-        readAgain();
+        cout << "isOpen: " << m_sock.is_open() << endl;
     }
 
     void readAgain() {

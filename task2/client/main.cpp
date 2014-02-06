@@ -22,7 +22,7 @@ int main() {
     try {
         app = new ClientApp();
     } catch (const boost::system::system_error& e) {
-        cout << "Connection rejected. Maybe server is switched off?";
+        cout << "Connection rejected. Maybe the server is switched off?";
         cout << endl;
         exit(1);
     }

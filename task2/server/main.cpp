@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <csignal>
+#include <boost/asio.hpp>
 
 using namespace std;
 
@@ -17,7 +18,13 @@ void signalHandler(int signum) {
 }
 
 int main() {
-    app = new ServerApp(10, 5555);
+
+    try {
+        app = new ServerApp(10, 5555);
+    } catch (const boost::system::system_error& e) {
+        cout << "error occurred:" << e.what() << endl;
+    }
+
     signal(SIGINT, signalHandler);
     app->run();
     delete app;
