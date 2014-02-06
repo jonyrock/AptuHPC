@@ -16,12 +16,9 @@ void signalHandler(int signum) {
     exit(0);
 }
 
-
 int main() {
-    
-    app = new ServerApp();
+    app = new ServerApp(10, 5555);
     signal(SIGINT, signalHandler);
     app->run();
     delete app;
-    
 }

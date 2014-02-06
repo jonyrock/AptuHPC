@@ -16,12 +16,9 @@ void signalHandler(int signum) {
     exit(0);
 }
 
-
 int main() {
-    
     app = new ClientApp();
     signal(SIGINT, signalHandler);
     app->run();
     delete app;
-    
 }
