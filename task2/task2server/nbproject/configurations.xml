@@ -4,14 +4,11 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <itemPath>ClientApp.h</itemPath>
+      <itemPath>ServerApp.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
                    projectFiles="true">
-    </logicalFolder>
-    <logicalFolder name="shared" displayName="shared" projectFiles="true">
-      <itemPath>/home/alex/Aptu/hpc/AptuHPC/task2/shared/Message.h</itemPath>
     </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
@@ -30,9 +27,6 @@
       <itemPath>Makefile</itemPath>
     </logicalFolder>
   </logicalFolder>
-  <sourceRootList>
-    <Elem>/home/alex/Aptu/hpc/AptuHPC/task2/shared</Elem>
-  </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="Debug" type="1">
@@ -43,22 +37,11 @@
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
       <compileType>
-        <ccTool>
-          <standard>8</standard>
-          <incDir>
-            <pElem>../shared</pElem>
-          </incDir>
-        </ccTool>
         <linkerTool>
           <commandLine>-lboost_system -lpthread</commandLine>
         </linkerTool>
       </compileType>
-      <item path="/home/alex/Aptu/hpc/AptuHPC/task2/shared/Message.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="ClientApp.h" ex="false" tool="3" flavor2="0">
+      <item path="ServerApp.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -76,10 +59,6 @@
         </cTool>
         <ccTool>
           <developmentMode>5</developmentMode>
-          <standard>8</standard>
-          <incDir>
-            <pElem>/home/alex/Aptu/hpc/AptuHPC/task2/shared</pElem>
-          </incDir>
         </ccTool>
         <fortranCompilerTool>
           <developmentMode>5</developmentMode>
@@ -88,15 +67,10 @@
           <developmentMode>5</developmentMode>
         </asmTool>
         <linkerTool>
-          <commandLine>-lboost_system</commandLine>
+          <commandLine>-lboost_system, -lpthread</commandLine>
         </linkerTool>
       </compileType>
-      <item path="/home/alex/Aptu/hpc/AptuHPC/task2/shared/Message.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="ClientApp.h" ex="false" tool="3" flavor2="0">
+      <item path="ServerApp.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>

@@ -1,5 +1,5 @@
 
-#include "ServerApp.h"
+#include "ClientApp.h"
 
 #include <iostream>
 #include <csignal>
@@ -7,7 +7,7 @@
 
 using namespace std;
 
-ServerApp* app;
+ClientApp* app;
 
 void signalHandler(int signum) {
     if (app != NULL) {
@@ -18,14 +18,24 @@ void signalHandler(int signum) {
 }
 
 int main() {
-
     try {
-        app = new ServerApp(10, 5555);
+        app = new ClientApp();
     } catch (const boost::system::system_error& e) {
-        cout << "error occurred:" << e.what() << endl;
+        cout << "Connection rejected. Maybe the server is switched off?";
+        cout << endl;
+        exit(1);
     }
-
     signal(SIGINT, signalHandler);
     app->run();
     delete app;
 }
+
+
+
+
+
+
+
+
+
+

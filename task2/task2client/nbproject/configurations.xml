@@ -4,7 +4,7 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <itemPath>ServerApp.h</itemPath>
+      <itemPath>ClientApp.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -37,18 +37,11 @@
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
       <compileType>
-        <ccTool>
-          <standard>8</standard>
-          <incDir>
-            <pElem>../shared</pElem>
-          </incDir>
-          <commandLine>-lboost_system -lpthread</commandLine>
-        </ccTool>
         <linkerTool>
-          <commandLine>-lboost_thread -lpthread</commandLine>
+          <commandLine>-lboost_system -lpthread</commandLine>
         </linkerTool>
       </compileType>
-      <item path="ServerApp.h" ex="false" tool="3" flavor2="0">
+      <item path="ClientApp.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -66,7 +59,6 @@
         </cTool>
         <ccTool>
           <developmentMode>5</developmentMode>
-          <standard>8</standard>
         </ccTool>
         <fortranCompilerTool>
           <developmentMode>5</developmentMode>
@@ -74,11 +66,8 @@
         <asmTool>
           <developmentMode>5</developmentMode>
         </asmTool>
-        <linkerTool>
-          <commandLine>-lboost_thread</commandLine>
-        </linkerTool>
       </compileType>
-      <item path="ServerApp.h" ex="false" tool="3" flavor2="0">
+      <item path="ClientApp.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>

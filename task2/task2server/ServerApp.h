@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Message.h"
-
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 

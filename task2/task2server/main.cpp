@@ -1,14 +1,13 @@
 
-#include "ClientApp.h"
+#include "ServerApp.h"
 
 #include <iostream>
 #include <csignal>
-
 #include <boost/asio.hpp>
 
 using namespace std;
 
-ClientApp* app;
+ServerApp* app;
 
 void signalHandler(int signum) {
     if (app != NULL) {
@@ -19,24 +18,15 @@ void signalHandler(int signum) {
 }
 
 int main() {
+
     try {
-        app = new ClientApp();
+        app = new ServerApp(10, 5555);
     } catch (const boost::system::system_error& e) {
-        cout << "Connection rejected. Maybe the server is switched off?";
-        cout << endl;
+        cout << "error occurred:" << e.what() << endl;
         exit(1);
     }
+
     signal(SIGINT, signalHandler);
     app->run();
     delete app;
 }
-
-
-
-
-
-
-
-
-
-
