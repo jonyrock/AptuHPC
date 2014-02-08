@@ -16,6 +16,10 @@ ip::tcp::endpoint ep(ip::tcp::v4(), 2014);
 ip::tcp::acceptor acc(service, ep);
 socket_ptr sock(new ip::tcp::socket(service));
 
+void start_accept(socket_ptr sock) {
+	acc.async_accept(*sock, boost::bind(handle_accept, sock, _1));
+}
+
 void handle_accept(socket_ptr sock, const system::error_code& err) {
 	if (err) {
 		cout << "Handle accept error" << endl;
@@ -24,10 +28,6 @@ void handle_accept(socket_ptr sock, const system::error_code& err) {
 	cout << "Got new connect!" << endl;
 	socket_ptr next_sock(new ip::tcp::socket(service));
 	start_accept(next_sock);
-}
-
-void start_accept(socket_ptr sock) {
-	acc.async_accept(*sock, boost::bind(handle_accept, sock, _1));
 }
 
 int main() {
