@@ -1,32 +1,26 @@
-
-#include "ServerApp.h"
-
 #include <iostream>
-#include <csignal>
 #include <boost/asio.hpp>
 
 using namespace std;
+using namespace boost::asio;
+using namespace boost;
 
-ServerApp* app;
+typedef shared_ptr<ip::tcp::socket> socket_ptr;
 
-void signalHandler(int signum) {
-    if (app != NULL) {
-        cout << endl;
-        delete app;
-    }
-    exit(0);
+io_service service;
+ip::tcp::endpoint ep(ip::tcp::v4(), 2014);
+ip::tcp::acceptor acc(service, ep);
+socket_ptr sock(new ip::tcp::socket(service));
+
+
+void start_accept(socket_ptr sock) {
+	
 }
 
 int main() {
+	
+	cout << "Server started" << endl;
+	start_accept(sock);
+	service.run();
 
-    try {
-        app = new ServerApp(10, 5555);
-    } catch (const boost::system::system_error& e) {
-        cout << "error occurred:" << e.what() << endl;
-        exit(1);
-    }
-
-    signal(SIGINT, signalHandler);
-    app->run();
-    delete app;
 }
