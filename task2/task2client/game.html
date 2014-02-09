@@ -1,0 +1,79 @@
+<html>
+<head>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script type="text/javascript">
+    
+        function run_game() {
+            if ("WebSocket" in window) {
+                ws = new WebSocket("ws://127.0.0.1:2015");
+                ws.onopen = function () {
+                    ws.send("Message to send");
+                    alert("Message is sent...");
+                    // TODO: interval to update hero position
+                    // setinterval();
+                };
+                ws.onmessage = function (evt) {
+                    var received_msg = evt.data;
+                    alert("Message is received...");
+                };
+                ws.onclose = function () {
+                    // alert("Connection is closed...");
+                };
+            } else {
+                alert("WebSocket NOT supported by your Browser!");
+            }
+        }
+        
+        function setHeroRandom() {
+            var width = $("#gameField").width();
+            
+            var height = $("#gameField").height();
+            var heroPosX = Math.floor((width - 5) * Math.random());
+            var heroPosY = Math.floor((width - 5) * Math.random());
+            
+            $("#playerHero").css("left", heroPosX + "px");
+            $("#playerHero").css("top", heroPosY + "px");
+            $("#playerHero").css("background", randomColor());
+            
+        }
+        
+        function randomColor() {
+            return '#' + Math.floor(Math.random()*16777215).toString(16);
+        }
+        
+        function addHero(name, color) {
+            $("#gameField").
+                append('<div class="hero" id="' + name + '"></div>');
+            $("#" + name).css('background', color);
+        }
+        
+        function update(name, x, y) {
+            $("#gameField").css('left', x + "px");
+            $("#gameField").css('top', y + "px");
+        }
+        
+        $(function() {
+           run_game();
+           setHeroRandom();
+        });
+        
+        
+        
+        
+    </script>
+    <style>
+        html, body  { height: 100%; padding: 0px; margin: 0px; }
+        #gameField  { width: 500px; height: 500px; position:relative; margin: auto; border: 1px solid #ccc; 
+                      margin-top: 80px; }
+        .hero { position:absolute; width:5px; height: 5px; }
+        #playerHero { top: 247px; left:247px; background: #f00; }
+    </style>
+</head>
+<body>
+<div id="sse">
+    <div id="gameField">
+        <div class="hero" id="playerHero"></div>
+    </div>
+</div>
+</body>
+</html
