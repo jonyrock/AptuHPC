@@ -132,6 +132,40 @@ WebSocketFrameType getFrame(
   return ERROR_FRAME;
 }
 
+size_t createMassage(const string& message, char* buffer) {
+  return (size_t)createFrame(
+      websocketTools::TEXT_FRAME,
+      (unsigned char*)message.c_str(),
+      message.size(),
+      (unsigned char*)buffer
+  );
+}
 
+int createFrame(
+  WebSocketFrameType frame_type, 
+  unsigned char* msg, int msg_length, unsigned char* buffer
+) {
+  
+  int pos = 0;
+  int size = msg_length; 
+  buffer[pos++] = (unsigned char)frame_type; // text frame
+
+  if(size<=125) {
+    buffer[pos++] = size;
+  }
+  else if(size<=65535) {
+    buffer[pos++] = 126; //16 bit length
+    buffer[pos++] = (size >> 8) & 0xFF; // rightmost first
+    buffer[pos++] = size & 0xFF;
+  }
+  else { // >2^16-1
+    buffer[pos++] = 127; //64 bit length
+    
+    //TODO: write 8 bytes length
+    pos+=8;
+  }
+  memcpy((void*)(buffer+pos), msg, size);
+  return (size+pos);
+}
 
 }

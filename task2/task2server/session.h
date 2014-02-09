@@ -47,6 +47,7 @@ private:
   boost::asio::ip::tcp::socket m_socket;
   enum { MAXLENGTH = 1024 };
   char m_data[MAXLENGTH];
+  char m_dataOut[MAXLENGTH];
   bool m_isGood;
   bool m_isConnected;
 

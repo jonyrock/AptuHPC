@@ -88,27 +88,50 @@ void session::handleReadMessage(
     string str(m_data, bytes_transferred);
     
     cout << "got new message [" << bytes_transferred << "]: ";
-    //cout << str << endl;
-    // printData(m_data, bytes_transferred);
     string message;
     websocketTools::getMessage(m_data, bytes_transferred, message);
     cout << message << endl;
     
+    // write begin
+    size_t frameLen = websocketTools::createMassage(
+      message, m_dataOut
+    );
+    
+    boost::asio::async_write(
+      m_socket,
+      boost::asio::buffer(m_dataOut, frameLen),
+      boost::bind(
+        &session::handleWriteMessage, this,
+        boost::asio::placeholders::error
+      )
+    );
+    
+  } else {
+    m_isGood = false;
+    delete this;
+  }
+}
+
+void session::handleWriteMessage(const system::error_code& error) {
+  if (!error) {
+    cout << "message send!" << endl;
+    
+    
+    
     m_socket.async_read_some(
       boost::asio::buffer(m_data, MAXLENGTH),
-      boost::bind (
+      boost::bind(
         &session::handleReadMessage, this,
         boost::asio::placeholders::error,
         boost::asio::placeholders::bytes_transferred
       )
     );
+    
   } else {
     m_isGood = false;
     delete this;
   }
-  
 }
-
 
 session::~session() {
   if (m_isGood)

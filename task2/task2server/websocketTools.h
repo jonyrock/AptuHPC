@@ -41,6 +41,16 @@ WebSocketFrameType getFrame(
 	int* out_length
 );
 
+size_t createMassage(
+	const std::string& message,
+	char* buffer
+);
 
+int createFrame(
+	WebSocketFrameType frame_type,
+	unsigned char* msg,
+	int msg_length,
+	unsigned char* buffer
+);
 
 }
