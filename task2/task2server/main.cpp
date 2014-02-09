@@ -1,48 +1,172 @@
+//
+// async_tcp_echo_server.cpp
+// ~~~~~~~~~~~~~~~~~~~~~~~~~
+//
+// Copyright (c) 2003-2008 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+//
+
+#include <cstdlib>
 #include <iostream>
-#include <boost/asio.hpp>
 #include <boost/bind.hpp>
-#include <algorithm>
+#include <boost/asio.hpp>
+#include <boost/algorithm/string/predicate.hpp>
+#include <iostream>
 #include <string>
+#include <sstream>
 
+#include "base64.h"
+#include <openssl/sha.h>
+
+using boost::asio::ip::tcp;
 using namespace std;
-using namespace boost;
-using namespace boost::asio;
 
-typedef shared_ptr<ip::tcp::socket> socket_ptr;
+class session
+{
+public:
+  session(boost::asio::io_service& io_service)
+    : socket_(io_service)
+  {
+  }
 
-void start_accept(socket_ptr);
-void handle_accept(socket_ptr, const system::error_code&);
+  tcp::socket& socket()
+  {
+    return socket_;
+  }
 
-io_service service;
-ip::tcp::endpoint ep(ip::tcp::v4(), 2014);
-ip::tcp::acceptor acc(service, ep);
-socket_ptr sock(new ip::tcp::socket(service));
+  void start()
+  {
+  	cout << "start" << endl;
+    socket_.async_read_some(boost::asio::buffer(data_, max_length),
+        boost::bind(&session::handle_read, this,
+          boost::asio::placeholders::error,
+          boost::asio::placeholders::bytes_transferred));
+  }
+  
+  string getWSKeyAccept(const string& key) {
+	string str(key);
+	str += "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+	unsigned char hash[SHA_DIGEST_LENGTH];
+ 	SHA1((unsigned char *)str.c_str(), str.size(), hash);
+  	return base64_encode(hash, SHA_DIGEST_LENGTH);
+  }
+  
+  string buildWebSocketResponse(const string& request) {
+  	stringstream requestStream(request);
+  	string key;
+  	while(requestStream.good()) {
+  		string line;
+  		getline(requestStream, line);
+  		if (boost::starts_with(line, "Sec-WebSocket-Key")) {
+  			stringstream ss(line);
+  			ss >> key; // skip first
+  			ss >> key;
+  		}
+  	}
+  	
+  	stringstream responseStream;
+  	responseStream << "HTTP/1.1 101 Switching Protocols\r\n";
+  	responseStream << "Upgrade: websocket\r\n";
+  	responseStream << "Connection: Upgrade\r\n";
+  	responseStream << "Sec-WebSocket-Accept: " 
+  	               << getWSKeyAccept(key) << "\r\n";
+  	responseStream << "\r\n";
+  	
+  	return responseStream.str();
+  }
 
-void start_accept(socket_ptr sock) {
-	acc.async_accept(*sock, boost::bind(handle_accept, sock, _1));
+  void handle_read(const boost::system::error_code& error,
+      size_t bytes_transferred) {
+    if (!error) {
+    	string str(data_, bytes_transferred);
+    	string response = buildWebSocketResponse(str);
+    	response.copy(data_, response.size(), 0);
+    	data_[response.size()] = '\0';
+    	cout << "Client connected" << endl;
+      	boost::asio::async_write (
+      		socket_,
+      		boost::asio::buffer(data_, response.size()),
+			boost::bind (
+				&session::handle_write, this,
+				boost::asio::placeholders::error
+			)
+        );
+    } else {
+      delete this;
+    }
+  }
+
+  void handle_write(const boost::system::error_code& error) {
+	if (!error) {
+    	cout << "something is written" << endl;
+      	socket_.async_read_some(
+      		boost::asio::buffer(data_, max_length),
+      		boost::bind (
+      			&session::handle_read, this,
+            	boost::asio::placeholders::error,
+            	boost::asio::placeholders::bytes_transferred
+            )
+      	);
+    } else {
+    	cout << "write error" << endl;
+      delete this;
+    }
+  }
+
+private:
+  tcp::socket socket_;
+  enum { max_length = 1024 };
+  char data_[max_length];
+};
+
+class server
+{
+public:
+  server(boost::asio::io_service& io_service, short port)
+    : io_service_(io_service),
+      acceptor_(io_service, tcp::endpoint(tcp::v4(), port))
+  {
+    session* new_session = new session(io_service_);
+    acceptor_.async_accept(new_session->socket(),
+        boost::bind(&server::handle_accept, this, new_session,
+          boost::asio::placeholders::error));
+  }
+
+void handle_accept(session* new_session, 
+  	                 const boost::system::error_code& error) {
+	if (!error) {
+      new_session->start();
+      new_session = new session(io_service_);
+      acceptor_.async_accept(new_session->socket(),
+          boost::bind(&server::handle_accept, this, new_session,
+            boost::asio::placeholders::error));
+    } else {
+		delete new_session;
+    }
 }
 
-void handle_accept(socket_ptr sock, const system::error_code& err) {
-	if (err) {
-		cout << "Handle accept error" << endl;
-		return;
-	}
-	cout << "Got new connect!" << endl;
-	socket_ptr next_sock(new ip::tcp::socket(service));
-	start_accept(next_sock);
-}
+private:
+  boost::asio::io_service& io_service_;
+  tcp::acceptor acceptor_;
+};
 
-size_t read_complete(char* buff, const system::error_code& err, 
-				   size_t bytes) {
-	if(err) return 0;
-	bool found = std::find(buff, buff + bytes, '\n') < 
-				 buff + bytes;
-	return found ? 0 : 1;
-}
+int main(int argc, char* argv[]){
+  try {
+    if (argc != 2) {
+      std::cerr << "Usage: async_tcp_echo_server <port>\n";
+      return 1;
+    }
 
-int main() {
-	cout << "Server started" << endl;
-	start_accept(sock);
-	service.run();
-	cout << "Server stopped" << endl;
+    boost::asio::io_service io_service;
+    using namespace std; // For atoi.
+    server s(io_service, atoi(argv[1]));
+    io_service.run();
+    
+  } catch (std::exception& e) {
+    std::cerr << "Exception: " << e.what() << "\n";
+  }
+
+  return 0;
 }

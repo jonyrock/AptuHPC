@@ -3,12 +3,13 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script type="text/javascript">
     
-        function run_game() {
+        function runGame() {
             if ("WebSocket" in window) {
                 ws = new WebSocket("ws://127.0.0.1:2015");
                 ws.onopen = function () {
-                    ws.send("Message to send");
-                    alert("Message is sent...");
+                    alert('Connected!');
+                    // ws.send("Message to send");
+                    // alert("Message is sent...");
                     // TODO: interval to update hero position
                     // setinterval();
                 };
@@ -17,7 +18,7 @@
                     alert("Message is received...");
                 };
                 ws.onclose = function () {
-                    // alert("Connection is closed...");
+                    alert("Connection is closed...");
                 };
             } else {
                 alert("WebSocket NOT supported by your Browser!");
@@ -34,11 +35,10 @@
             $("#playerHero").css("left", heroPosX + "px");
             $("#playerHero").css("top", heroPosY + "px");
             $("#playerHero").css("background", randomColor());
-            
         }
         
         function randomColor() {
-            return '#' + Math.floor(Math.random()*16777215).toString(16);
+            return '#' + Math.floor(Math.random() * 16777215).toString(16);
         }
         
         function addHero(name, color) {
@@ -53,7 +53,7 @@
         }
         
         $(function() {
-           run_game();
+           runGame();
            setHeroRandom();
            $("#gameField").click(function(e){
             var parentOffset = $(this).offset(); 
@@ -63,18 +63,12 @@
             });
         });
         
-        
-        
-        
-        
-        
     </script>
     <style>
         html, body  { height: 100%; padding: 0px; margin: 0px; }
         #gameField  { width: 500px; height: 500px; position:relative; margin: auto; border: 1px solid #ccc; 
                       margin-top: 80px; }
         .hero { position:absolute; width:5px; height: 5px; }
-        #playerHero { top: 247px; left:247px; background: #f00; }
     </style>
 </head>
 <body>
