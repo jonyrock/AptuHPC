@@ -2,39 +2,54 @@
 <head>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script type="text/javascript">
-    
+        
+        var socket = undefined;
+        
+        var heroColor = "#FFF";
+        var heroX = 0;
+        var heroY = 0;
+        
         function runGame() {
             if ("WebSocket" in window) {
-                ws = new WebSocket("ws://127.0.0.1:2015");
-                ws.onopen = function () {
-                    alert('Connected!');
-                    ws.send("Message to send");
-                    // alert("Message is sent...");
-                    // TODO: interval to update hero position
-                    // setinterval();
+                $("#status").text("connecting...");
+                socket = new WebSocket("ws://127.0.0.1:2015");
+                socket.onopen = function () {
+                    $("#status").text("connected!");
+                    socket.send(":hello " + heroColor + " " 
+                                          + heroX + " "
+                                          + heroY);
                 };
-                ws.onmessage = function (evt) {
+                socket.onmessage = function (evt) {
                     var received_msg = evt.data;
-                    alert("Message is received...");
+                    alert(received_msg);
                 };
-                ws.onclose = function () {
+                socket.onclose = function () {
                     alert("Connection is closed...");
+                    socket = undefined;
                 };
             } else {
                 alert("WebSocket NOT supported by your Browser!");
             }
         }
         
+        function sendHeroState() {
+            if(socket === undefined) {
+                return;
+            }
+            socket.send(":update " + heroX + " " + heroY);
+        }
+        
         function setHeroRandom() {
-            var width = $("#gameField").width();
-            
+            var width  = $("#gameField").width();
             var height = $("#gameField").height();
-            var heroPosX = Math.floor((width - 5) * Math.random());
-            var heroPosY = Math.floor((width - 5) * Math.random());
             
-            $("#playerHero").css("left", heroPosX + "px");
-            $("#playerHero").css("top", heroPosY + "px");
-            $("#playerHero").css("background", randomColor());
+            heroX = Math.floor((width - 5) * Math.random());
+            heroY = Math.floor((width - 5) * Math.random());
+            heroColor = randomColor();
+            
+            $("#playerHero").css("left", heroX + "px");
+            $("#playerHero").css("top",  heroY + "px");
+            $("#playerHero").css("background", heroColor);
         }
         
         function randomColor() {
@@ -48,33 +63,38 @@
         }
         
         function update(name, x, y) {
-            $("#playerHero").css('left', x + "px");
-            $("#playerHero").css('top', y + "px");
+            $("#" + name).css('left', x + "px");
+            $("#" + name).css('top', y + "px");
         }
         
         $(function() {
-           runGame();
            setHeroRandom();
-           $("#gameField").click(function(e){
+           runGame();
+           $("#gameField").click(function(e) {
             var parentOffset = $(this).offset(); 
-                var relX = e.pageX - parentOffset.left;
-                var relY = e.pageY - parentOffset.top;
-                update("playerHero", relX, relY);
+                heroX = e.pageX - parentOffset.left;
+                heroY = e.pageY - parentOffset.top;
+                update("playerHero", heroX, heroY);
+                sendHeroState();
             });
         });
         
     </script>
     <style>
         html, body  { height: 100%; padding: 0px; margin: 0px; }
-        #gameField  { width: 500px; height: 500px; position:relative; margin: auto; border: 1px solid #ccc; 
-                      margin-top: 80px; }
+        #gameField  { width: 500px; height: 500px; position: relative; 
+                      margin: auto; border: 1px solid #ccc; margin-top: 80px; }
         .hero { position:absolute; width:5px; height: 5px; }
+        #status { font-size: 10px; text-align: center; color: #335 }
     </style>
 </head>
 <body>
 <div id="sse">
     <div id="gameField">
         <div class="hero" id="playerHero"></div>
+    </div>
+    <div id="status">
+        
     </div>
 </div>
 </body>
