@@ -1,6 +1,8 @@
 #include <iostream>
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
+#include <algorithm>
+#include <string>
 
 using namespace std;
 using namespace boost;
@@ -28,6 +30,14 @@ void handle_accept(socket_ptr sock, const system::error_code& err) {
 	cout << "Got new connect!" << endl;
 	socket_ptr next_sock(new ip::tcp::socket(service));
 	start_accept(next_sock);
+}
+
+size_t read_complete(char* buff, const system::error_code& err, 
+				   size_t bytes) {
+	if(err) return 0;
+	bool found = std::find(buff, buff + bytes, '\n') < 
+				 buff + bytes;
+	return found ? 0 : 1;
 }
 
 int main() {
