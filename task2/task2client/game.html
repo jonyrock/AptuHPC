@@ -48,14 +48,22 @@
         }
         
         function update(name, x, y) {
-            $("#gameField").css('left', x + "px");
-            $("#gameField").css('top', y + "px");
+            $("#playerHero").css('left', x + "px");
+            $("#playerHero").css('top', y + "px");
         }
         
         $(function() {
            run_game();
            setHeroRandom();
+           $("#gameField").click(function(e){
+            var parentOffset = $(this).offset(); 
+                var relX = e.pageX - parentOffset.left;
+                var relY = e.pageY - parentOffset.top;
+                update("playerHero", relX, relY);
+            });
         });
+        
+        
         
         
         
