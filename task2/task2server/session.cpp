@@ -1,5 +1,5 @@
 #include "session.h"
-#include "handshake.h"
+#include "websocketTools.h"
 
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
@@ -42,7 +42,7 @@ void session::handleReadHandshake(
       delete this;
     }
     
-    string response = handshake::createResponse(str);
+    string response = websocketTools::createHandshakeResponseHeader(str);
     response.copy(m_data, response.size(), 0);
     m_data[response.size()] = '\0';
     boost::asio::async_write(
@@ -67,7 +67,7 @@ void session::handleWriteHandshake(
     cout << "new connection" << endl;
     m_socket.async_read_some(
       boost::asio::buffer(m_data, MAXLENGTH),
-      boost::bind (
+      boost::bind(
         &session::handleReadMessage, this,
         boost::asio::placeholders::error,
         boost::asio::placeholders::bytes_transferred
@@ -87,8 +87,12 @@ void session::handleReadMessage(
     
     string str(m_data, bytes_transferred);
     
-    cout << "got new message: ";
-    cout << str << endl;
+    cout << "got new message [" << bytes_transferred << "]: ";
+    //cout << str << endl;
+    // printData(m_data, bytes_transferred);
+    string message;
+    websocketTools::getMessage(m_data, bytes_transferred, message);
+    cout << message << endl;
     
     m_socket.async_read_some(
       boost::asio::buffer(m_data, MAXLENGTH),
