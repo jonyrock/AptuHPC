@@ -8,7 +8,7 @@
                 ws = new WebSocket("ws://127.0.0.1:2015");
                 ws.onopen = function () {
                     alert('Connected!');
-                    // ws.send("Message to send");
+                    ws.send("Message to send");
                     // alert("Message is sent...");
                     // TODO: interval to update hero position
                     // setinterval();

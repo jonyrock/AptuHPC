@@ -45,14 +45,15 @@ private:
   tcp::acceptor acceptor_;
 };
 
-int main(int argc, char* argv[]){
+int main(int argc, char* argv[]) {
   try {
     if (argc != 2) {
-      std::cerr << "Usage: async_tcp_echo_server <port>\n";
+      std::cerr << "Usage: server <port>\n";
       return 1;
     }
 
     boost::asio::io_service io_service;
+    // TODO: use lexical_cast
     using namespace std; // For atoi.
     server s(io_service, atoi(argv[1]));
     io_service.run();
