@@ -23,7 +23,7 @@
                     var received_msg = evt.data;
                 };
                 socket.onclose = function () {
-                    alert("Connection is closed...");
+                    $("#status").text("closed");
                     socket = undefined;
                 };
             } else {

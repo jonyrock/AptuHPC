@@ -2,6 +2,8 @@
 
 #include <boost/asio.hpp>
 
+#include <vector>
+
 class server {
 
 public:
@@ -15,5 +17,7 @@ public:
 private:
 	boost::asio::io_service m_service;
 	boost::asio::ip::tcp::acceptor m_acceptor;
+	
+	std::vector<session> m_sessions;
   
 };

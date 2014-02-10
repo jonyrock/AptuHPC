@@ -5,7 +5,11 @@
 
 using boost::asio::ip::tcp;
 
+class server;
+
 class session {
+  
+  friend server;
 
 public:
   
@@ -35,7 +39,6 @@ public:
     size_t bytes_transferred
   );
   
-  // TODO: implement it
   void handleWriteMessage(
     const boost::system::error_code& error
   );
