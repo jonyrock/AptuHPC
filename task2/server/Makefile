@@ -8,10 +8,10 @@ all: server
 server: $(OBJS)
 	$(CC) $(LIBS) $(OBJS) -o server
 
-main.o: main.cpp server.o
+main.o: main.cpp
 	$(CC) $(CFLAGS) main.cpp
 
-game.o: game.h game.cpp
+game.o: game.h game.cpp server.o
 	$(CC) $(CFLAGS) game.cpp
 
 server.o: server.h session.o

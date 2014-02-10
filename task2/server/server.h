@@ -1,3 +1,5 @@
+#pragma once 
+
 #include "session.h"
 
 #include <boost/asio.hpp>
@@ -8,6 +10,8 @@ class server {
 
 public:
 	server(short port);
+
+	void run(size_t workersNumber);
 
 	void addSession();
 

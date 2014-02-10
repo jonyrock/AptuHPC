@@ -9,10 +9,12 @@ using boost::asio::ip::tcp;
 
 server::server(short port):
 	m_acceptor(m_service, tcp::endpoint(tcp::v4(), port)) {
-    
-    addSession();
-    m_service.run();
-	
+}
+
+// TODO: use real threads
+void server::run(size_t workersNumber) {
+	addSession();
+	m_service.run();
 }
 
 void server::addSession() {

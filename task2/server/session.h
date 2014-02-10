@@ -5,14 +5,9 @@
 
 using boost::asio::ip::tcp;
 
-class server;
-
 class session {
-  
-  friend server;
 
 public:
-  
 	session(boost::asio::io_service& service):
     m_socket(service),
     m_isGood(true),
