@@ -11,16 +11,16 @@ server: $(OBJS)
 main.o: main.cpp
 	$(CC) $(CFLAGS) main.cpp
 
-game.o: game.h igame.h game.cpp server.o
+game.o: game.h igame.h game.cpp server.h
 	$(CC) $(CFLAGS) game.cpp
 
-server.o: server.h igame.h session.o
+server.o: server.h igame.h server.cpp session.h
 	$(CC) $(CFLAGS) server.cpp
 
-session.o: session.h websocketTools.o
+session.o: session.h websocketTools.h
 	$(CC) $(CFLAGS) session.cpp
 
-websocketTools.o: base64.o websocketTools.h websocketTools.cpp
+websocketTools.o: base64.h websocketTools.h websocketTools.cpp
 	$(CC) $(CFLAGS) websocketTools.cpp
 
 base64.o: base64.h base64.cpp

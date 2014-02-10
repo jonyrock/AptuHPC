@@ -36,6 +36,8 @@ public:
 
 private:
   
+  void addRead();
+  
   void handleReadHandshake(
     const boost::system::error_code& error,
     size_t bytes_transferred

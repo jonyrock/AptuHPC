@@ -6,8 +6,26 @@
         var socket = undefined;
         
         var heroColor = "#FFF";
-        var heroX = 0;
-        var heroY = 0;
+        var heroX  = 0;
+        var heroY  = 0;
+        var heroId = 0;
+        
+        function consumeMessage(msg) {
+            var xs = msg.split(" ");
+            if(xs[0] == ":hello") {
+                heroId = parseInt(xs[1]);
+                return;
+            }
+            if(xs[0] == ":appear") {
+                var heroId = parseInt(xs[1]);
+                var color = xs[2];
+                var x = parseInt(xs[3]);
+                var y = parseInt(xs[4]);
+                addHero(heroId, color);
+                update(heroId, x, y);
+                return;
+            }
+        }
         
         function runGame() {
             if ("WebSocket" in window) {
@@ -20,8 +38,9 @@
                                           + heroY);
                 };
                 socket.onmessage = function (evt) {
-                    var received_msg = evt.data;
-                    $("#status").text("received: " + received_msg);
+                    var msg = evt.data;
+                    $("#status").text("received: " + msg);
+                    consumeMessage(msg);
                 };
                 socket.onclose = function () {
                     $("#status").text("closed");
@@ -47,9 +66,9 @@
             heroY = Math.floor((width - 5) * Math.random());
             heroColor = randomColor();
             
-            $("#playerHero").css("left", heroX + "px");
-            $("#playerHero").css("top",  heroY + "px");
-            $("#playerHero").css("background", heroColor);
+            $("#playerMe").css("left", heroX + "px");
+            $("#playerMe").css("top",  heroY + "px");
+            $("#playerMe").css("background", heroColor);
         }
         
         function randomColor() {
@@ -58,13 +77,14 @@
         
         function addHero(name, color) {
             $("#gameField").
-                append('<div class="hero" id="' + name + '"></div>');
-            $("#" + name).css('background', color);
+                append('<div class="hero" id="player' + name + '"></div>');
+            $("#player" + name).css('background', color);
         }
         
         function update(name, x, y) {
-            $("#" + name).css('left', x + "px");
-            $("#" + name).css('top',  y + "px");
+            $("#player" + name)
+                .css('left', x + "px")
+                .css('top',  y + "px");
         }
         
         $(function() {
@@ -74,24 +94,24 @@
                 var parentOffset = $(this).offset(); 
                 heroX = Math.floor(e.pageX - parentOffset.left);
                 heroY = Math.floor(e.pageY - parentOffset.top);
-                update("playerHero", heroX, heroY);
+                update("Me", heroX, heroY);
                 sendHeroState();
             });
         });
         
     </script>
     <style>
-        html, body  { height: 100%; padding: 0px; margin: 0px; }
-        #gameField  { width: 500px; height: 500px; position: relative; 
-                      margin: auto; border: 1px solid #ccc; margin-top: 80px; }
-        .hero { position:absolute; width:5px; height: 5px; }
+        html, body { height: 100%; padding: 0px; margin: 0px; }
+        #gameField { width: 500px; height: 500px; position: relative; 
+                     margin: auto; border: 1px solid #ccc; margin-top: 80px; }
+        .hero { position:absolute; width:5px; height: 5px; border:1px solid #aaa ; }
         #status { font-size: 12px; text-align: center; color: #335 }
     </style>
 </head>
 <body>
 <div id="sse">
     <div id="gameField">
-        <div class="hero" id="playerHero"></div>
+        <div class="hero" id="playerMe"></div>
     </div>
     <div id="status">
         
