@@ -13,7 +13,7 @@ int main(int argc, char* argv[]) {
     }
     
     short port = boost::lexical_cast<short>(argv[1]);
-    game g(port);
+    game g(port, 10);
     
   } catch (exception& e) {
     cerr << "Exception: " << e.what() << "\n";

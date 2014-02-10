@@ -6,10 +6,10 @@
 
 class game : public igame {
 public:
-	game(short port);
+	game(short port, size_t workersNumber);
 	
-	void onClientHello(size_t clientId, const std::string& params);
-	void onClientUpdate(size_t clientId, const std::string& params);
+	void onClientMessage(size_t clientId, const std::string& params);
+	
 	void onClientDead(size_t clientId);
 	
 private:

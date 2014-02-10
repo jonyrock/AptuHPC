@@ -18,6 +18,9 @@ public:
 
 	void handleAccept(session* new_session,
   	                  const boost::system::error_code& error);
+	
+	
+	void broadcastMessage(const std::string& message);
 
 private:
 	boost::asio::io_service m_service;

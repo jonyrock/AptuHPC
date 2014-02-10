@@ -7,6 +7,7 @@
 #include <boost/bind.hpp>
 
 using boost::asio::ip::tcp;
+using namespace std;
 
 server::server(igame* game, short port):
 	m_game(game),
@@ -38,4 +39,8 @@ void server::handleAccept(session* newSession,
     } else {
 		delete newSession;
 	}
+}
+
+void server::broadcastMessage(const string& message) {
+	cout << "TODO: implement broadcast -> " << message << endl;
 }
