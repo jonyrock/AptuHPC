@@ -27,6 +27,20 @@ private:
 	igame* m_game;
 	boost::asio::ip::tcp::acceptor m_acceptor;
 	
-	std::vector<session> m_sessions;
-  
+	// TODO: concurent map
+	std::vector<session*> m_sessions;
+	
+	// TODO: atomic
+	size_t m_sessionsCouner;
+	
+	inline void onClientMessage(
+		size_t clientId, const std::string& message
+	) {	
+		m_game->onClientMessage(clientId, message);
+	}
+	
+	void onClientDead(size_t clientId) {
+		m_game->onClientDead(clientId);
+	}
+	
 };

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-class igame {
+struct igame {
 	virtual void onClientMessage(
 		size_t clientId, 
 		const std::string& params

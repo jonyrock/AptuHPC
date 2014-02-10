@@ -1,6 +1,7 @@
 #pragma once 
 
 #include <boost/asio.hpp>
+#include <boost/function.hpp>
 #include <string>
 
 using boost::asio::ip::tcp;
@@ -37,6 +38,15 @@ public:
   void handleWriteMessage(
     const boost::system::error_code& error
   );
+  
+  inline void messageEvent(
+    boost::function<void (const std::string message)> fun) {
+    m_messageEvent = fun;
+  }
+  
+  inline void deathEvent(boost::function<void ()> fun) {
+    m_deathEvent = fun;
+  }
 
   ~session();
 
@@ -48,5 +58,7 @@ private:
   char m_dataOut[MAXLENGTH];
   bool m_isGood;
   bool m_isConnected;
+  boost::function<void (const std::string message)> m_messageEvent;
+  boost::function<void ()> m_deathEvent;
 
 };

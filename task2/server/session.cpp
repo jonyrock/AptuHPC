@@ -3,6 +3,7 @@
 
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
+#include <boost/function.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 
 #include <iostream>
@@ -87,10 +88,9 @@ void session::handleReadMessage(
     
     string str(m_data, bytes_transferred);
     
-    cout << "got new message [" << bytes_transferred << "]: ";
     string message;
     websocketTools::getMessage(m_data, bytes_transferred, message);
-    cout << message << endl;
+    m_messageEvent(message);
     
     // write begin
     size_t frameLen = websocketTools::createMassage(
@@ -138,4 +138,6 @@ session::~session() {
     cout << "session is closed";
   else
     cout << "session is broken";
+  cout << "call onDeath" << endl;
+  m_deathEvent();
 }

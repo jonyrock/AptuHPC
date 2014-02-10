@@ -12,6 +12,7 @@ using namespace std;
 server::server(igame* game, short port):
 	m_game(game),
 	m_acceptor(m_service, tcp::endpoint(tcp::v4(), port)) {
+		m_sessionsCouner = 0;		
 }
 
 // TODO: use real threads
@@ -22,6 +23,22 @@ void server::run(size_t workersNumber) {
 
 void server::addSession() {
 	session* newSession = new session(m_service);
+	size_t newSessionId = m_sessionsCouner++;
+	newSession->messageEvent(
+		boost::bind(
+			&server::onClientMessage, this,
+			newSessionId,
+			_1
+		)
+	);
+
+	newSession->deathEvent(
+		boost::bind(
+			&server::onClientDead, this,
+			newSessionId
+		)
+	);
+
 	m_acceptor.async_accept(
 		newSession->socket(),
 		boost::bind(
@@ -32,7 +49,8 @@ void server::addSession() {
 }
 
 void server::handleAccept(session* newSession, 
-  	                      const boost::system::error_code& error) {
+  	                      const boost::system::error_code& error
+) {
 	if (!error) {
       	newSession->start();
 		addSession();
