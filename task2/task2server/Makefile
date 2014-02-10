@@ -8,16 +8,16 @@ all: server
 server: $(OBJS)
 	$(CC) $(LIBS) $(OBJS) -o server
 
-main.o: main.cpp server.h	
+main.o: main.cpp server.o
 	$(CC) $(CFLAGS) main.cpp
 
-server.o: session.h session.cpp
+server.o: server.h session.o
 	$(CC) $(CFLAGS) server.cpp
 
-session.o: websocketTools.h session.h session.cpp
+session.o: session.h websocketTools.o
 	$(CC) $(CFLAGS) session.cpp
 
-websocketTools.o: base64.h websocketTools.h websocketTools.cpp
+websocketTools.o: base64.o websocketTools.h websocketTools.cpp
 	$(CC) $(CFLAGS) websocketTools.cpp
 
 base64.o: base64.h base64.cpp

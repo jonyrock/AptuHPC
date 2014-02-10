@@ -1,8 +1,7 @@
 
 #include "server.h"
 
-#include <boost/bind.hpp>
-#include <boost/asio.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include <cstdlib>
 #include <iostream>
@@ -23,13 +22,9 @@ int main(int argc, char* argv[]) {
       return 1;
     }
     
-    // TODO: move it to server
-    boost::asio::io_service io_service;
+    short port = boost::lexical_cast<short>(argv[1]);
+    server s(port);
     
-    // TODO: use lexical_cast
-    using namespace std; // For atoi.
-    server s(io_service, atoi(argv[1]));
-    io_service.run();
     
   } catch (std::exception& e) {
     std::cerr << "Exception: " << e.what() << "\n";

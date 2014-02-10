@@ -7,18 +7,18 @@
 
 using boost::asio::ip::tcp;
 
-server::server(boost::asio::io_service& io_service, short port):
-	m_service(io_service),
-	m_acceptor(io_service, tcp::endpoint(tcp::v4(), port)) {
-     
+server::server(short port):
+	m_acceptor(m_service, tcp::endpoint(tcp::v4(), port)) {
+    
     addSession();
+    m_service.run();
 	
 }
 
 void server::addSession() {
 	session* newSession = new session(m_service);
 	m_acceptor.async_accept(
-	newSession->socket(),
+		newSession->socket(),
 		boost::bind(
 			&server::handleAccept, this, newSession,
 			boost::asio::placeholders::error
@@ -27,7 +27,7 @@ void server::addSession() {
 }
 
 void server::handleAccept(session* newSession, 
-  	                 const boost::system::error_code& error) {
+  	                      const boost::system::error_code& error) {
 	if (!error) {
       	newSession->start();
 		addSession();
