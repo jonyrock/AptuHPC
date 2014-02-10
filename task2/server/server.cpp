@@ -1,13 +1,15 @@
 
 #include "server.h"
 #include "session.h"
+#include "igame.h"
 
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 
 using boost::asio::ip::tcp;
 
-server::server(short port):
+server::server(igame* game, short port):
+	m_game(game),
 	m_acceptor(m_service, tcp::endpoint(tcp::v4(), port)) {
 }
 

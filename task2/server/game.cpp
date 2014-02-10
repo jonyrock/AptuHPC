@@ -4,7 +4,7 @@
 
 using namespace std;
 
-game::game(short port):m_server(port) {
+game::game(short port):m_server(this, port) {
 	m_server.run(10);
 }
 

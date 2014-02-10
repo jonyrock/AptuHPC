@@ -1,6 +1,7 @@
 #pragma once 
 
 #include "session.h"
+#include "igame.h"
 
 #include <boost/asio.hpp>
 
@@ -9,7 +10,7 @@
 class server {
 
 public:
-	server(short port);
+	server(igame* game, short port);
 
 	void run(size_t workersNumber);
 
@@ -20,6 +21,7 @@ public:
 
 private:
 	boost::asio::io_service m_service;
+	igame* m_game;
 	boost::asio::ip::tcp::acceptor m_acceptor;
 	
 	std::vector<session> m_sessions;
