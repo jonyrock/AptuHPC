@@ -6,6 +6,8 @@
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 
+#include <map>
+
 using boost::asio::ip::tcp;
 using namespace std;
 
@@ -21,9 +23,22 @@ void server::run(size_t workersNumber) {
 	m_service.run();
 }
 
+void server::messageToClient(size_t clientId, const string& message) {
+	m_sessions[clientId]->sendMessage(message);
+}
+
+void server::messageBroadcast(const string& message) {
+	cout << "TODO: implement broadcast -> " << message << endl;
+}
+
+void server::messageBroadcastExceptClient(
+	size_t clientId, const string& message) {
+}
+
 void server::addSession() {
 	session* newSession = new session(m_service);
 	size_t newSessionId = m_sessionsCouner++;
+	m_sessions.insert(make_pair(newSessionId, newSession));
 	newSession->messageEvent(
 		boost::bind(
 			&server::onClientMessage, this,
@@ -59,6 +74,3 @@ void server::handleAccept(session* newSession,
 	}
 }
 
-void server::broadcastMessage(const string& message) {
-	cout << "TODO: implement broadcast -> " << message << endl;
-}

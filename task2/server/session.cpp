@@ -7,6 +7,7 @@
 #include <boost/algorithm/string/predicate.hpp>
 
 #include <iostream>
+#include <string>
 
 
 using namespace std;
@@ -23,6 +24,22 @@ void session::start() {
       &session::handleReadHandshake, this,
       boost::asio::placeholders::error,
       boost::asio::placeholders::bytes_transferred
+    )
+  );
+}
+
+void session::sendMessage(const string& message) {
+  // write begin
+  size_t frameLen = websocketTools::createMassage(
+    message, m_dataOut
+  );
+    
+  boost::asio::async_write(
+    m_socket,
+    boost::asio::buffer(m_dataOut, frameLen),
+    boost::bind(
+      &session::handleWriteMessage, this,
+      boost::asio::placeholders::error
     )
   );
 }
@@ -92,20 +109,6 @@ void session::handleReadMessage(
     websocketTools::getMessage(m_data, bytes_transferred, message);
     m_messageEvent(message);
     
-    // write begin
-    size_t frameLen = websocketTools::createMassage(
-      message, m_dataOut
-    );
-    
-    boost::asio::async_write(
-      m_socket,
-      boost::asio::buffer(m_dataOut, frameLen),
-      boost::bind(
-        &session::handleWriteMessage, this,
-        boost::asio::placeholders::error
-      )
-    );
-    
   } else {
     m_isGood = false;
     delete this;
@@ -114,19 +117,7 @@ void session::handleReadMessage(
 
 void session::handleWriteMessage(const system::error_code& error) {
   if (!error) {
-    cout << "message send!" << endl;
-    
-    
-    
-    m_socket.async_read_some(
-      boost::asio::buffer(m_data, MAXLENGTH),
-      boost::bind(
-        &session::handleReadMessage, this,
-        boost::asio::placeholders::error,
-        boost::asio::placeholders::bytes_transferred
-      )
-    );
-    
+    cout << "a message send!" << endl;
   } else {
     m_isGood = false;
     delete this;

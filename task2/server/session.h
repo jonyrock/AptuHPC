@@ -20,7 +20,22 @@ public:
   }
 
   void start();
+  
+  void sendMessage(const std::string& message);
+  
+  inline void messageEvent(
+    boost::function<void (const std::string message)> fun) {
+    m_messageEvent = fun;
+  }
+  
+  inline void deathEvent(boost::function<void ()> fun) {
+    m_deathEvent = fun;
+  }
 
+  ~session();
+
+private:
+  
   void handleReadHandshake(
     const boost::system::error_code& error,
     size_t bytes_transferred
@@ -38,19 +53,6 @@ public:
   void handleWriteMessage(
     const boost::system::error_code& error
   );
-  
-  inline void messageEvent(
-    boost::function<void (const std::string message)> fun) {
-    m_messageEvent = fun;
-  }
-  
-  inline void deathEvent(boost::function<void ()> fun) {
-    m_deathEvent = fun;
-  }
-
-  ~session();
-
-private:
 
   boost::asio::ip::tcp::socket m_socket;
   enum { MAXLENGTH = 1024 };

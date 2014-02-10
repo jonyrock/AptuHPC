@@ -21,6 +21,7 @@
                 };
                 socket.onmessage = function (evt) {
                     var received_msg = evt.data;
+                    $("#status").text("received: " + received_msg);
                 };
                 socket.onclose = function () {
                     $("#status").text("closed");
