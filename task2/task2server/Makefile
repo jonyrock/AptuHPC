@@ -1,15 +1,18 @@
 CC      = g++
 CFLAGS  = -c -Wall -std=c++11
 LIBS    = -lboost_system -lpthread -lcrypto
-OBJS    = main.o session.o websocketTools.o base64.o
+OBJS    = main.o server.o session.o websocketTools.o base64.o
 
 all: server
 
 server: $(OBJS)
 	$(CC) $(LIBS) $(OBJS) -o server
 
-main.o: main.cpp session.h	
+main.o: main.cpp server.h	
 	$(CC) $(CFLAGS) main.cpp
+
+server.o: session.h session.cpp
+	$(CC) $(CFLAGS) server.cpp
 
 session.o: websocketTools.h session.h session.cpp
 	$(CC) $(CFLAGS) session.cpp

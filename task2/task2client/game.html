@@ -1,6 +1,6 @@
 <html>
 <head>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="jquery.min.js"></script>
     <script type="text/javascript">
         
         var socket = undefined;
@@ -21,7 +21,6 @@
                 };
                 socket.onmessage = function (evt) {
                     var received_msg = evt.data;
-                    alert(received_msg);
                 };
                 socket.onclose = function () {
                     alert("Connection is closed...");
@@ -64,16 +63,16 @@
         
         function update(name, x, y) {
             $("#" + name).css('left', x + "px");
-            $("#" + name).css('top', y + "px");
+            $("#" + name).css('top',  y + "px");
         }
         
         $(function() {
            setHeroRandom();
            runGame();
            $("#gameField").click(function(e) {
-            var parentOffset = $(this).offset(); 
-                heroX = e.pageX - parentOffset.left;
-                heroY = e.pageY - parentOffset.top;
+                var parentOffset = $(this).offset(); 
+                heroX = Math.floor(e.pageX - parentOffset.left);
+                heroY = Math.floor(e.pageY - parentOffset.top);
                 update("playerHero", heroX, heroY);
                 sendHeroState();
             });
@@ -85,7 +84,7 @@
         #gameField  { width: 500px; height: 500px; position: relative; 
                       margin: auto; border: 1px solid #ccc; margin-top: 80px; }
         .hero { position:absolute; width:5px; height: 5px; }
-        #status { font-size: 10px; text-align: center; color: #335 }
+        #status { font-size: 12px; text-align: center; color: #335 }
     </style>
 </head>
 <body>
