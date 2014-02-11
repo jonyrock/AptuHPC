@@ -1,1 +1,145 @@
-Hello
+<html>
+<head>
+    <script src="jquery.min.js"></script>
+    <script type="text/javascript">
+        
+        var socket = undefined;
+        
+        var heroColor = "#FFF";
+        var heroX  = 0;
+        var heroY  = 0;
+        var heroId = 0;
+        
+        function consumeMessage(msg) {
+            var xs = msg.split(" ");
+            if(xs[0] == ":hello") {
+                heroId = parseInt(xs[1]);
+                return;
+            }
+            if(xs[0] == ":appear") {
+                var heroId = parseInt(xs[1]);
+                var color = xs[2];
+                var x = parseInt(xs[3]);
+                var y = parseInt(xs[4]);
+                addHero(heroId, color);
+                updateHero(heroId, x, y);
+                return;
+            }
+            
+            if(xs[0] == ":update") {
+                var heroId = parseInt(xs[1]);
+                var x = parseInt(xs[2]);
+                var y = parseInt(xs[3]);
+                updateHero(heroId, x, y);
+                return;
+            }
+            
+            if(xs[0] == ":bye") {
+                removeHero(parseInt(xs[1]));
+                return;
+            }
+        }
+        
+        function runGame() {
+            if ("WebSocket" in window) {
+                $("#status").text("connecting...");
+                socket = new WebSocket("ws://127.0.0.1:2015");
+                socket.onopen = function () {
+                    $("#status").text("connected!");
+                    socket.send(":hello " + heroColor + " " 
+                                          + heroX + " "
+                                          + heroY);
+                };
+                socket.onmessage = function (evt) {
+                    var msg = evt.data;
+                    $("#status").text("received: " + msg);
+                    consumeMessage(msg);
+                };
+                socket.onclose = function () {
+                    $("#status").text("closed");
+                    socket = undefined;
+                };
+            } else {
+                alert("WebSocket NOT supported by your Browser!");
+            }
+        }
+        
+        function sendHeroState() {
+            if(socket === undefined) {
+                return;
+            }
+            socket.send(":update " + heroX + " " + heroY);
+        }
+        
+        window.onbeforeunload = function(){
+            if(socket === undefined) {
+                return;
+            }
+            socket.send(":bye");
+        }
+        
+        function setHeroRandom() {
+            var width  = $("#gameField").width();
+            var height = $("#gameField").height();
+            
+            heroX = Math.floor((width - 5) * Math.random());
+            heroY = Math.floor((width - 5) * Math.random());
+            heroColor = randomColor();
+            
+            $("#playerMe").css("left", heroX + "px");
+            $("#playerMe").css("top",  heroY + "px");
+            $("#playerMe").css("background", heroColor);
+        }
+        
+        function randomColor() {
+            return '#' + Math.floor(Math.random() * 16777215).toString(16);
+        }
+        
+        function addHero(name, color) {
+            $("#gameField").
+                append('<div class="hero" id="player' + name + '"></div>');
+            $("#player" + name).css('background', color);
+        }
+        
+        function updateHero(name, x, y) {
+            $("#player" + name)
+                .css('left', x + "px")
+                .css('top',  y + "px");
+        }
+        
+        function removeHero(name) {
+            $("#player" + name).remove();
+        }
+                
+        $(function() {
+           setHeroRandom();
+           runGame();
+           $("#gameField").click(function(e) {
+                var parentOffset = $(this).offset(); 
+                heroX = Math.floor(e.pageX - parentOffset.left);
+                heroY = Math.floor(e.pageY - parentOffset.top);
+                updateHero("Me", heroX, heroY);
+                sendHeroState();
+            });
+        });
+        
+    </script>
+    <style>
+        html, body { height: 100%; overflow: hidden; padding: 0px; margin: 0px; }
+        #gameField { width: 500px; height: 500px; position: relative; 
+                     margin: auto; border: 1px solid #ccc; margin-top: 80px; }
+        .hero { position:absolute; width:5px; height: 5px; border:1px solid #aaa ; }
+        #status { font-size: 12px; text-align: center; color: #335 }
+    </style>
+</head>
+<body>
+
+    <div id="gameField">
+        <div class="hero" id="playerMe"></div>
+    </div>
+    <div id="status">
+        
+    </div>
+
+</body>
+</html
