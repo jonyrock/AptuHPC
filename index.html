@@ -114,7 +114,7 @@
         $(function() {
            setHeroRandom();
            runGame();
-           $("#gameField").click(function(e) {
+           $("#gameField").mousemove(function(e) {
                 var parentOffset = $(this).offset(); 
                 heroX = Math.floor(e.pageX - parentOffset.left);
                 heroY = Math.floor(e.pageY - parentOffset.top);
