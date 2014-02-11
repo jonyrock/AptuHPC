@@ -14,10 +14,10 @@ main.o: main.cpp
 game.o: game.h igame.h game.cpp server.h
 	$(CC) $(CFLAGS) game.cpp
 
-server.o: server.h igame.h server.cpp session.h
+server.o: server.h igame.h session.h server.cpp
 	$(CC) $(CFLAGS) server.cpp
 
-session.o: session.h websocketTools.h
+session.o: session.h websocketTools.h session.cpp
 	$(CC) $(CFLAGS) session.cpp
 
 websocketTools.o: base64.h websocketTools.h websocketTools.cpp

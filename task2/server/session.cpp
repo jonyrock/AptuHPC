@@ -4,11 +4,10 @@
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 #include <boost/function.hpp>
-#include <boost/algorithm/string/predicate.hpp>
 
 #include <iostream>
 #include <string>
-
+#include <sstream>
 
 using namespace std;
 using namespace boost;
@@ -54,8 +53,11 @@ void session::handleReadHandshake(
     // cout << "read " << "----------------" << endl;
     // cout << str << endl;
     // cout << "xxxxxxxxx" << endl;
+    stringstream ss(str);
+    string firstWord;
+    ss >> firstWord;
     
-    if(!boost::starts_with(str, "GET")) {
+    if(firstWord != "GET") {
       m_isGood = false;
       delete this;
     }
@@ -111,6 +113,16 @@ void session::handleReadMessage(
     
     string message;
     websocketTools::getMessage(m_data, bytes_transferred, message);
+    
+    stringstream ss(str);
+    string firstWord;
+    ss >> firstWord;
+    
+    if(firstWord == ":bye") {
+      m_isGood = true;
+      delete this;
+      return;
+    }
     m_messageEvent(message);
     addRead();
     

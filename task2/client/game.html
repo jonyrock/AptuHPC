@@ -22,7 +22,20 @@
                 var x = parseInt(xs[3]);
                 var y = parseInt(xs[4]);
                 addHero(heroId, color);
-                update(heroId, x, y);
+                updateHero(heroId, x, y);
+                return;
+            }
+            
+            if(xs[0] == ":update") {
+                var heroId = parseInt(xs[1]);
+                var x = parseInt(xs[2]);
+                var y = parseInt(xs[3]);
+                updateHero(heroId, x, y);
+                return;
+            }
+            
+            if(xs[0] == ":bye") {
+                removeHero(parseInt(xs[1]));
                 return;
             }
         }
@@ -58,6 +71,13 @@
             socket.send(":update " + heroX + " " + heroY);
         }
         
+        window.onbeforeunload = function(){
+            if(socket === undefined) {
+                return;
+            }
+            socket.send(":bye");
+        }
+        
         function setHeroRandom() {
             var width  = $("#gameField").width();
             var height = $("#gameField").height();
@@ -81,12 +101,16 @@
             $("#player" + name).css('background', color);
         }
         
-        function update(name, x, y) {
+        function updateHero(name, x, y) {
             $("#player" + name)
                 .css('left', x + "px")
                 .css('top',  y + "px");
         }
         
+        function removeHero(name) {
+            $("#player" + name).remove();
+        }
+                
         $(function() {
            setHeroRandom();
            runGame();
@@ -94,14 +118,14 @@
                 var parentOffset = $(this).offset(); 
                 heroX = Math.floor(e.pageX - parentOffset.left);
                 heroY = Math.floor(e.pageY - parentOffset.top);
-                update("Me", heroX, heroY);
+                updateHero("Me", heroX, heroY);
                 sendHeroState();
             });
         });
         
     </script>
     <style>
-        html, body { height: 100%; padding: 0px; margin: 0px; }
+        html, body { height: 100%; overflow: hidden; padding: 0px; margin: 0px; }
         #gameField { width: 500px; height: 500px; position: relative; 
                      margin: auto; border: 1px solid #ccc; margin-top: 80px; }
         .hero { position:absolute; width:5px; height: 5px; border:1px solid #aaa ; }
@@ -109,13 +133,13 @@
     </style>
 </head>
 <body>
-<div id="sse">
+
     <div id="gameField">
         <div class="hero" id="playerMe"></div>
     </div>
     <div id="status">
         
     </div>
-</div>
+
 </body>
 </html
