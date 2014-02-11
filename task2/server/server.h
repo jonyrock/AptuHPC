@@ -4,6 +4,8 @@
 #include "igame.h"
 
 #include <boost/asio.hpp>
+#include <boost/thread.hpp>
+#include <atomic>
 
 #include <map>
 
@@ -24,6 +26,13 @@ public:
 
 private:
     
+    void unsafe_messageToClient(size_t clientId, const std::string& message);
+    
+    void unsafe_messageBroadcast(const std::string& message);
+    
+    void unsafe_messageBroadcastExcept(size_t cleintId, 
+        const std::string& message);
+    
     void addSession();
 
     void handleAccept(size_t newSessionIdm, session* new_session,
@@ -32,23 +41,22 @@ private:
     boost::asio::io_service m_service;
     igame* m_game;
     boost::asio::ip::tcp::acceptor m_acceptor;
-    
-    // TODO: concurent map
+
+    // TODO: concurrent map
+    boost::mutex m_sessionsMutex;
     std::map<size_t, session*> m_sessions;
-    
-    // TODO: atomic
-    size_t m_sessionsCouner;
-    
+
+    std::atomic_size_t m_sessionsCouner;
+
     inline void onClientMessage(
         size_t clientId, const std::string& message) {
         m_game->onClientMessage(clientId, message);
     }
     
-    void onClientDead(size_t clientId) {
-        if(m_sessions.find(clientId) != m_sessions.end()) {
-            m_sessions.erase(m_sessions.find(clientId));
-        }
-        m_game->onClientDead(clientId);
-    }
+    void removeClient(size_t clientId);
+    
+    void addClient(size_t clientId, session* newSession);
+    
+    void onClientDead(size_t clientId);
     
 };
