@@ -43,7 +43,7 @@
         function runGame() {
             if ("WebSocket" in window) {
                 $("#status").text("connecting...");
-                socket = new WebSocket("ws://192.168.1.127:2015");
+                socket = new WebSocket("ws://78.47.164.68:2015");
                 socket.onopen = function () {
                     $("#status").text("connected!");
                     socket.send(":hello " + heroColor + " " 
