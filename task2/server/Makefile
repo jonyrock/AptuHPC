@@ -1,6 +1,6 @@
 CC      = g++
 CFLAGS  = -c -Wall -std=c++11
-LIBS    = -lboost_system -lpthread -lcrypto -lboost_thread-mt
+LIBS    = -lboost_system -lpthread -lcrypto -lboost_thread
 OBJS    = main.o game.o server.o session.o websocketTools.o base64.o
 
 all: server
