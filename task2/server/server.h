@@ -35,7 +35,7 @@ private:
     
     void addSession();
 
-    void handleAccept(size_t newSessionIdm, session* new_session,
+    void handleAccept(size_t newSessionIdm, session_ptr new_session,
                       const boost::system::error_code& error);
     
     boost::asio::io_service m_service;
@@ -44,7 +44,7 @@ private:
 
     // TODO: concurrent map
     boost::mutex m_sessionsMutex;
-    std::map<size_t, session*> m_sessions;
+    std::map<size_t, session_ptr> m_sessions;
 
     std::atomic_size_t m_sessionsCouner;
 
@@ -55,8 +55,12 @@ private:
     
     void removeClient(size_t clientId);
     
-    void addClient(size_t clientId, session* newSession);
+    void addClient(size_t clientId, session_ptr newSession);
     
     void onClientDead(size_t clientId);
+    
+    boost::mutex m_sendMutex;
+    boost::mutex m_readMutex;
+    std::atomic_bool m_isOpen;
     
 };

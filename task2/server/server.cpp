@@ -78,7 +78,7 @@ void server::unsafe_messageBroadcastExcept(size_t clientId,
 }
 
 void server::addSession() {
-	session* newSession = new session(m_service);
+	session_ptr newSession(new session(m_service));
 	size_t newSessionId = m_sessionsCouner.fetch_add(1);
 	newSession->messageEvent(
 		boost::bind(
@@ -105,30 +105,31 @@ void server::addSession() {
 	);
 }
 
-void server::handleAccept(size_t newSessionId, session* newSession, 
+void server::handleAccept(size_t newSessionId, session_ptr newSession, 
   	                      const boost::system::error_code& error) {
 	if (!error) {
 		addClient(newSessionId, newSession);
       	newSession->start();
     } else {
-		delete newSession;
+		
 	}
 	addSession();
 }
 
 void server::onClientDead(size_t clientId) {
-	removeClient(clientId);
 	m_game->onClientDead(clientId);
+	removeClient(clientId);
 }
 
-void server::addClient(size_t clientId, session* newSession) {
+void server::addClient(size_t clientId, session_ptr newSession) {
 	lock_guard guard(m_sessionsMutex);
 	m_sessions.insert(make_pair(clientId, newSession));
 }
 
 void server::removeClient(size_t clientId) {
 	lock_guard guard(m_sessionsMutex);
-	if(m_sessions.find(clientId) != m_sessions.end()) {
-		m_sessions.erase(m_sessions.find(clientId));
+	auto it = m_sessions.find(clientId);
+	if(it != m_sessions.end()) {
+		m_sessions.erase(it);
     }
 }
